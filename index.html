@@ -770,11 +770,19 @@ async function fetchFromSheets() {
     const json = await res.json();
     if (json.success) {
       appData = { results: json.results || {} };
-      renderAll();
+      const el = document.getElementById("sync-status");
+      if (el) el.textContent = "✓ Live";
+    } else {
+      showToast("Database returned an error. Showing last known data.", "error");
+      const el = document.getElementById("sync-status");
+      if (el) el.textContent = "⚠ Error";
     }
+    renderAll(); // Always render regardless of success/failure
   } catch(e) {
-    showToast("Could not reach database. Showing cached data.", "error");
+    showToast("Could not reach database. Showing last known data.", "error");
     try { const r = localStorage.getItem("dream11_pool_ipl2026_v1"); if (r) appData = JSON.parse(r); } catch(e2) {}
+    const el = document.getElementById("sync-status");
+    if (el) el.textContent = "⚠ Offline";
     renderAll();
   }
 }
