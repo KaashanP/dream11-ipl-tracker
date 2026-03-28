@@ -396,16 +396,122 @@
   .empty-state-icon { font-size: 48px; margin-bottom: 16px; }
   .empty-state h3 { font-size: 18px; color: var(--text-secondary); margin-bottom: 8px; }
 
-  /* ─── RESPONSIVE ─── */
+  /* ─── BOTTOM NAV (mobile only) ─── */
+  .bottom-nav {
+    display: none;
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: #fff;
+    border-top: 1.5px solid var(--border);
+    padding: 6px 0;
+    padding-bottom: max(6px, env(safe-area-inset-bottom));
+    z-index: 200;
+    box-shadow: 0 -4px 20px rgba(120,80,40,0.1);
+  }
+  .nav-btn {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+    border: none; background: transparent; cursor: pointer; padding: 6px 4px;
+    color: var(--text-muted); font-family: inherit; transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent; min-height: 52px; justify-content: center;
+  }
+  .nav-icon { font-size: 22px; line-height: 1; transition: transform 0.2s; }
+  .nav-label { font-size: 10px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; }
+  .nav-btn.active { color: var(--accent-gold); }
+  .nav-btn.active .nav-icon { transform: scale(1.15); }
+
+  /* ─── MOBILE ─── */
   @media (max-width: 768px) {
-    .header { padding: 14px 16px; flex-direction: column; gap: 12px; }
-    .tab-bar { padding: 8px 16px; overflow-x: auto; }
-    .tab-content { padding: 16px; }
-    .podium { flex-direction: column; align-items: center; }
-    .podium-card { order: unset !important; transform: none !important; min-width: 90%; }
-    .today-match-teams { font-size: 20px; }
-    .header-stats { gap: 20px; }
-    .leaderboard-grid { grid-template-columns: 1fr; }
+    /* Smooth scrolling on iOS */
+    * { -webkit-overflow-scrolling: touch; }
+    body { overflow-x: hidden; }
+
+    /* Compact header */
+    .header {
+      padding: 10px 14px 8px;
+      flex-wrap: wrap; gap: 6px;
+      position: sticky; top: 0;
+    }
+    .header-left { gap: 10px; }
+    .logo { width: 34px; height: 34px; font-size: 12px; border-radius: 9px; flex-shrink: 0; }
+    .header h1 { font-size: 16px; }
+    .header-subtitle { font-size: 10px; }
+    .header-stats {
+      width: 100%;
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      background: rgba(212,136,15,0.07);
+      border-radius: 10px; padding: 7px 4px; gap: 0;
+    }
+    .header-stat { padding: 0 2px; }
+    .header-stat-value { font-size: 14px; }
+    .header-stat-label { font-size: 8px; letter-spacing: 0.2px; }
+
+    /* Hide top tabs on mobile — use bottom nav instead */
+    .tab-bar { display: none; }
+
+    /* Tab content with bottom nav clearance */
+    .tab-content { padding: 12px 12px 76px; }
+
+    /* ── Podium: 3 cards in a row, gold elevated ── */
+    .podium {
+      flex-direction: row; align-items: flex-end;
+      gap: 8px; padding: 4px 0 12px; margin-bottom: 16px; overflow: visible;
+    }
+    .podium-card {
+      flex: 1; min-width: 0;
+      padding: 12px 8px 10px; border-radius: 12px;
+      order: unset !important;
+    }
+    .podium-card.gold  { transform: translateY(-10px) !important; order: 2 !important; }
+    .podium-card.silver { order: 1 !important; }
+    .podium-card.bronze { order: 3 !important; }
+    .podium-rank { font-size: 20px; margin-bottom: 4px; }
+    .podium-avatar { width: 36px; height: 36px; font-size: 12px; margin-bottom: 5px; }
+    .podium-name { font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .podium-amount { font-size: 13px; margin-top: 1px; }
+    .podium-matches { font-size: 8px; margin-top: 2px; }
+
+    /* ── Leaderboard table: hide secondary columns ── */
+    .lb-table th:nth-child(4), .lb-table td:nth-child(4), /* Played */
+    .lb-table th:nth-child(8), .lb-table td:nth-child(8), /* Win % */
+    .lb-table th:nth-child(9), .lb-table td:nth-child(9)  /* Last 5 */
+    { display: none; }
+
+    .lb-table td { padding: 10px 8px; font-size: 13px; }
+    .lb-table th { padding: 8px 8px; font-size: 9px; }
+    .lb-avatar { width: 28px; height: 28px; font-size: 10px; }
+    .lb-name-cell { gap: 7px; }
+    .lb-rank { font-size: 13px; width: 28px; }
+
+    /* ── Match detail: tighter sticky columns ── */
+    .md-table th:first-child { min-width: 28px; }
+    .md-table th:nth-child(2) { left: 28px; min-width: 110px; }
+    .md-table th:nth-child(3) { left: 138px; min-width: 70px; }
+    .md-table td:first-child { min-width: 28px; font-size: 11px; }
+    .md-table td:nth-child(2) { left: 28px; min-width: 110px; font-size: 12px; }
+    .md-table td:nth-child(3) { left: 138px; min-width: 70px; font-size: 11px; }
+    .md-table td, .md-table th { padding: 9px 7px; font-size: 11px; }
+
+    /* ── Input section ── */
+    .input-section { max-width: 100%; }
+    .today-match-card { padding: 18px 14px; border-radius: 14px; }
+    .today-match-teams { font-size: 22px; }
+    .match-selector select, .player-select { padding: 13px 14px; font-size: 15px; }
+    .input-card { padding: 16px; }
+    .submit-btn { padding: 16px; font-size: 15px; }
+    .undo-btn { padding: 13px; }
+
+    /* ── Toast above bottom nav ── */
+    .toast { left: 12px; right: 12px; bottom: 72px; text-align: center; font-size: 13px; padding: 12px 16px; }
+
+    /* Show bottom nav */
+    .bottom-nav { display: flex; }
+  }
+
+  /* Extra small phones */
+  @media (max-width: 380px) {
+    .header h1 { font-size: 14px; }
+    .header-stat-value { font-size: 13px; }
+    .podium-name { font-size: 9px; }
+    .podium-amount { font-size: 12px; }
   }
 </style>
 </head>
@@ -491,6 +597,21 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<nav class="bottom-nav" id="bottom-nav">
+  <button class="nav-btn active" data-tab="leaderboard">
+    <span class="nav-icon">🏆</span>
+    <span class="nav-label">Standings</span>
+  </button>
+  <button class="nav-btn" data-tab="details">
+    <span class="nav-icon">📊</span>
+    <span class="nav-label">Details</span>
+  </button>
+  <button class="nav-btn" data-tab="input">
+    <span class="nav-icon">✏️</span>
+    <span class="nav-label">Submit</span>
+  </button>
+</nav>
 
 <script>
 // ═══════════════════════════════════════════════════════
@@ -901,13 +1022,16 @@ function renderHeaderStats() {
   document.getElementById("stat-pool").textContent=`₹${(c*CONFIG.participants.length*CONFIG.entryFee).toLocaleString("en-IN")}`;
 }
 
-document.querySelectorAll(".tab-btn").forEach(btn=>{
-  btn.addEventListener("click",()=>{
-    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
-    document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active"));
-    btn.classList.add("active");
-    document.getElementById("tab-"+btn.dataset.tab).classList.add("active");
-  });
+function switchTab(tab) {
+  document.querySelectorAll(".tab-btn, .nav-btn").forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active"));
+  document.querySelectorAll(`[data-tab="${tab}"]`).forEach(b=>b.classList.add("active"));
+  document.getElementById("tab-"+tab).classList.add("active");
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+document.querySelectorAll(".tab-btn, .nav-btn").forEach(btn=>{
+  btn.addEventListener("click",()=>switchTab(btn.dataset.tab));
 });
 
 function renderAll() { renderHeaderStats(); renderLeaderboard(); renderMatchDetail(); renderInput(); }
