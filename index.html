@@ -547,6 +547,129 @@
     .podium-name { font-size: 9px; }
     .podium-amount { font-size: 12px; }
   }
+
+  /* ─── 4TH PLACE ─── */
+  .position-badge.pos-4 { background: linear-gradient(135deg, #2c6fbb, #1a5499); }
+  .md-cell-fourth { color: var(--accent-blue); font-weight: 700; }
+
+  /* ─── PIN MODAL ─── */
+  .pin-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 500; backdrop-filter: blur(4px); animation: fadeIn 0.2s ease;
+  }
+  .pin-modal {
+    background: var(--bg-card); border-radius: 24px; padding: 36px 28px;
+    max-width: 320px; width: 92%; box-shadow: 0 16px 48px rgba(0,0,0,0.22); text-align: center;
+  }
+  .pin-modal-icon { font-size: 40px; margin-bottom: 10px; }
+  .pin-modal h2 { font-size: 20px; font-weight: 800; margin-bottom: 5px; }
+  .pin-modal p { font-size: 13px; color: var(--text-secondary); margin-bottom: 18px; }
+  .pin-dots { display: flex; justify-content: center; gap: 10px; margin-bottom: 22px; }
+  .pin-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--border); transition: background 0.15s; }
+  .pin-dot.filled { background: var(--accent-gold); transform: scale(1.15); }
+  .pin-keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+  .pin-key {
+    padding: 15px 10px; border: 1.5px solid var(--border); background: var(--bg-secondary);
+    border-radius: 12px; font-size: 22px; font-weight: 700; cursor: pointer;
+    transition: all 0.12s; font-family: inherit; color: var(--text-primary);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .pin-key:hover, .pin-key:active { background: var(--bg-hover); border-color: var(--accent-gold); transform: scale(0.96); }
+  .pin-key.clear { font-size: 14px; font-weight: 600; color: var(--accent-red); border-color: transparent; background: transparent; }
+  .pin-key.empty { visibility: hidden; pointer-events: none; }
+  .pin-error { color: var(--accent-red); font-size: 13px; font-weight: 600; min-height: 18px; margin-bottom: 6px; }
+  .pin-cancel { background: transparent; border: none; color: var(--text-muted); font-size: 12px; cursor: pointer; font-family: inherit; padding: 4px; }
+
+  /* ─── LOCKED TAB OVERLAY ─── */
+  .locked-overlay {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 60px 20px; text-align: center;
+  }
+  .locked-overlay .lock-icon { font-size: 52px; margin-bottom: 14px; }
+  .locked-overlay h3 { font-size: 20px; color: var(--text-secondary); font-weight: 800; margin-bottom: 8px; }
+  .locked-overlay p { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; }
+  .unlock-btn {
+    padding: 13px 36px; background: linear-gradient(135deg, var(--accent-gold), var(--accent-orange));
+    color: #fff; border: none; border-radius: 14px; font-family: inherit;
+    font-size: 16px; font-weight: 700; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(212,136,15,0.3); transition: all 0.2s;
+  }
+  .unlock-btn:hover { transform: translateY(-2px); }
+
+  /* ─── SETTINGS TAB ─── */
+  .settings-wrap { max-width: 560px; margin: 0 auto; }
+  .settings-section {
+    background: var(--bg-card); border-radius: 16px; padding: 22px 22px 16px;
+    margin-bottom: 18px; border: 1.5px solid var(--border-light); box-shadow: var(--shadow);
+  }
+  .settings-section-title {
+    font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px;
+    color: var(--accent-gold); margin-bottom: 16px; display: flex; align-items: center; gap: 7px;
+  }
+  .settings-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); font-weight: 700; margin-bottom: 6px; display: block; margin-top: 10px; }
+  .settings-label:first-of-type { margin-top: 0; }
+  .settings-input {
+    width: 100%; padding: 11px 14px; background: var(--bg-secondary);
+    border: 1.5px solid var(--border); color: var(--text-primary); font-family: inherit;
+    font-size: 14px; border-radius: 10px; transition: border-color 0.2s;
+  }
+  .settings-input:focus { outline: none; border-color: var(--accent-gold); box-shadow: 0 0 0 3px rgba(212,136,15,0.1); }
+  .settings-input.compact { width: 100px; text-align: center; }
+  .player-row { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; }
+  .player-row input {
+    flex: 1; padding: 10px 12px; background: var(--bg-secondary); border: 1.5px solid var(--border);
+    color: var(--text-primary); font-family: inherit; font-size: 14px; border-radius: 10px;
+    transition: border-color 0.2s;
+  }
+  .player-row input:focus { outline: none; border-color: var(--accent-gold); }
+  .player-num { font-size: 11px; font-weight: 700; color: var(--text-muted); width: 22px; text-align: right; flex-shrink: 0; }
+  .remove-player-btn {
+    padding: 8px 10px; background: transparent; border: 1.5px solid var(--border-light);
+    border-radius: 8px; cursor: pointer; font-size: 14px; color: var(--text-muted);
+    transition: all 0.2s; flex-shrink: 0;
+  }
+  .remove-player-btn:hover { color: var(--accent-red); border-color: var(--accent-red); background: rgba(192,57,43,0.05); }
+  .add-player-btn {
+    width: 100%; padding: 10px; background: transparent;
+    border: 1.5px dashed var(--accent-gold); color: var(--accent-gold);
+    border-radius: 10px; font-family: inherit; font-size: 13px;
+    font-weight: 700; cursor: pointer; margin-top: 6px; transition: all 0.2s;
+  }
+  .add-player-btn:hover { background: rgba(212,136,15,0.05); }
+  .winner-count-row { display: flex; gap: 8px; margin: 6px 0 14px; }
+  .wc-btn {
+    flex: 1; padding: 10px; border: 1.5px solid var(--border); background: var(--bg-secondary);
+    border-radius: 10px; font-family: inherit; font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s; color: var(--text-secondary);
+  }
+  .wc-btn.active { background: var(--accent-gold); color: #fff; border-color: var(--accent-gold); }
+  .payout-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin: 8px 0; }
+  .payout-item { display: flex; flex-direction: column; gap: 4px; }
+  .payout-item label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; text-align: center; }
+  .payout-item input { text-align: center; padding: 9px 8px; background: var(--bg-secondary); border: 1.5px solid var(--border); color: var(--text-primary); font-family: inherit; font-size: 14px; font-weight: 700; border-radius: 10px; width: 100%; transition: border-color 0.2s; }
+  .payout-item input:focus { outline: none; border-color: var(--accent-gold); }
+  .zero-sum-box { padding: 10px 14px; border-radius: 10px; font-size: 12px; font-weight: 600; margin-top: 10px; line-height: 1.5; }
+  .zero-sum-ok { background: rgba(45,138,78,0.08); color: var(--accent-green); border: 1px solid rgba(45,138,78,0.2); }
+  .zero-sum-bad { background: rgba(192,57,43,0.06); color: var(--accent-red); border: 1px solid rgba(192,57,43,0.2); }
+  .settings-warning {
+    background: rgba(230,126,34,0.07); border: 1px solid rgba(230,126,34,0.2);
+    border-radius: 10px; padding: 11px 14px; font-size: 12px;
+    color: var(--accent-orange); font-weight: 500; margin-bottom: 14px; line-height: 1.5;
+  }
+  .save-cfg-btn {
+    width: 100%; padding: 15px; background: linear-gradient(135deg, var(--accent-gold), var(--accent-orange));
+    color: #fff; border: none; border-radius: 12px; font-family: inherit;
+    font-size: 15px; font-weight: 800; cursor: pointer; margin-bottom: 4px;
+    text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 16px rgba(212,136,15,0.25); transition: all 0.2s;
+  }
+  .save-cfg-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(212,136,15,0.35); }
+  .save-cfg-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .save-cfg-btn.secondary { background: var(--bg-secondary); color: var(--text-secondary); border: 1.5px solid var(--border); box-shadow: none; font-size: 13px; padding: 11px; }
+  .save-cfg-btn.secondary:hover { background: var(--bg-hover); transform: none; }
+  @media (max-width: 768px) {
+    .payout-grid { grid-template-columns: repeat(2, 1fr); }
+  }
 </style>
 </head>
 <body>
@@ -583,6 +706,7 @@
   <button class="tab-btn active" data-tab="leaderboard"><span class="tab-icon">&#127942;</span> Leaderboard</button>
   <button class="tab-btn" data-tab="details"><span class="tab-icon">&#128202;</span> Match Details</button>
   <button class="tab-btn" data-tab="input"><span class="tab-icon">&#9998;</span> Submit Results</button>
+  <button class="tab-btn" data-tab="settings"><span class="tab-icon">&#9881;</span> Settings</button>
 </div>
 
 <div class="tab-content active" id="tab-leaderboard">
@@ -615,7 +739,7 @@
 </div>
 
 <div class="tab-content" id="tab-input">
-  <div class="input-section">
+  <div class="input-section" id="input-section">
     <div class="today-match-card" id="today-card">
       <div class="today-label" id="today-label">Today's Match</div>
       <div class="today-match-teams" id="today-teams">—</div>
@@ -630,7 +754,47 @@
   </div>
 </div>
 
+<div class="tab-content" id="tab-settings">
+  <!-- Settings always visible; PIN required only to Save -->
+  <div class="settings-wrap" id="settings-form"></div>
+</div>
+
 <div class="toast" id="toast"></div>
+
+<!-- PIN Modal -->
+<div id="pin-overlay" style="display:none" class="pin-overlay">
+  <div class="pin-modal">
+    <div class="pin-modal-icon">🔐</div>
+    <h2>Admin PIN</h2>
+    <p>Enter your 8-digit PIN to continue.</p>
+    <div class="pin-dots">
+      <div class="pin-dot" id="pd0"></div>
+      <div class="pin-dot" id="pd1"></div>
+      <div class="pin-dot" id="pd2"></div>
+      <div class="pin-dot" id="pd3"></div>
+      <div class="pin-dot" id="pd4"></div>
+      <div class="pin-dot" id="pd5"></div>
+      <div class="pin-dot" id="pd6"></div>
+      <div class="pin-dot" id="pd7"></div>
+    </div>
+    <div class="pin-keypad">
+      <button class="pin-key" onclick="pinKey('1')">1</button>
+      <button class="pin-key" onclick="pinKey('2')">2</button>
+      <button class="pin-key" onclick="pinKey('3')">3</button>
+      <button class="pin-key" onclick="pinKey('4')">4</button>
+      <button class="pin-key" onclick="pinKey('5')">5</button>
+      <button class="pin-key" onclick="pinKey('6')">6</button>
+      <button class="pin-key" onclick="pinKey('7')">7</button>
+      <button class="pin-key" onclick="pinKey('8')">8</button>
+      <button class="pin-key" onclick="pinKey('9')">9</button>
+      <button class="pin-key empty"></button>
+      <button class="pin-key" onclick="pinKey('0')">0</button>
+      <button class="pin-key clear" onclick="pinBackspace()">⌫</button>
+    </div>
+    <div class="pin-error" id="pin-error"></div>
+    <button class="pin-cancel" onclick="hidePinModal()">Cancel</button>
+  </div>
+</div>
 
 <nav class="bottom-nav" id="bottom-nav">
   <button class="nav-btn active" data-tab="leaderboard">
@@ -645,23 +809,35 @@
     <span class="nav-icon">✏️</span>
     <span class="nav-label">Submit</span>
   </button>
+  <button class="nav-btn" data-tab="settings">
+    <span class="nav-icon">⚙️</span>
+    <span class="nav-label">Settings</span>
+  </button>
 </nav>
 
 <script>
 // ═══════════════════════════════════════════════════════
 // CONFIGURATION
 // ═══════════════════════════════════════════════════════
-const CONFIG = {
+// CONFIG is mutable — loaded from Google Sheets on startup, can be changed in Settings
+let CONFIG = {
   participants: [
     "Player 1","Player 2","Player 3","Player 4",
     "Player 5","Player 6","Player 7","Player 8",
     "Player 9","Player 10","Player 11","Player 12"
   ],
   entryFee: 100,
-  payouts: { 1: +500, 2: +300, 3: +100 },
+  payouts: [500, 300, 100],   // array: index 0=1st, 1=2nd, 2=3rd, 3=4th (optional)
+  winnerCount: 3,
   lossPayout: -100,
   seasonName: "IPL 2026"
 };
+
+// Auth & PIN state
+let serverPin = "12345678";       // loaded from Google Sheets
+let sessionAuthenticated = false; // unlocked for current browser session
+let pinCallback = null;
+let pinEntry = "";
 
 // ═══════════════════════════════════════════════════════
 // IPL 2026 MATCH SCHEDULE (Official BCCI)
@@ -761,7 +937,6 @@ function setLoading(on) {
 
 async function fetchFromSheets() {
   if (APPS_SCRIPT_URL === "YOUR_APPS_SCRIPT_URL_HERE") {
-    // Fallback to localStorage if URL not configured
     try { const r = localStorage.getItem("dream11_pool_ipl2026_v1"); if (r) appData = JSON.parse(r); } catch(e) {}
     renderAll(); return;
   }
@@ -770,40 +945,50 @@ async function fetchFromSheets() {
     const json = await res.json();
     if (json.success) {
       appData = { results: json.results || {} };
+      // Load settings from server
+      if (json.settings) applyServerSettings(json.settings);
       const el = document.getElementById("sync-status");
-      if (el) el.textContent = "✓ Live";
+      if (el) { el.textContent = "✓ Live"; el.style.color = "var(--accent-green)"; }
     } else {
-      showToast("Database returned an error. Showing last known data.", "error");
       const el = document.getElementById("sync-status");
-      if (el) el.textContent = "⚠ Error";
+      if (el) { el.textContent = "⚠ Error"; el.style.color = "var(--accent-red)"; }
     }
-    renderAll(); // Always render regardless of success/failure
+    renderAll();
   } catch(e) {
     showToast("Could not reach database. Showing last known data.", "error");
-    try { const r = localStorage.getItem("dream11_pool_ipl2026_v1"); if (r) appData = JSON.parse(r); } catch(e2) {}
     const el = document.getElementById("sync-status");
-    if (el) el.textContent = "⚠ Offline";
+    if (el) { el.textContent = "⚠ Offline"; el.style.color = "var(--accent-red)"; }
     renderAll();
+  }
+}
+
+function applyServerSettings(settings) {
+  if (settings.pin) serverPin = settings.pin;
+  if (settings.config) {
+    try {
+      const cfg = typeof settings.config === "string" ? JSON.parse(settings.config) : settings.config;
+      if (cfg.participants && cfg.participants.length >= 2) CONFIG.participants = cfg.participants;
+      if (cfg.entryFee > 0) CONFIG.entryFee = cfg.entryFee;
+      if (Array.isArray(cfg.payouts) && cfg.payouts.length >= 1) CONFIG.payouts = cfg.payouts;
+      if (cfg.winnerCount >= 1) CONFIG.winnerCount = cfg.winnerCount;
+      if (cfg.lossPayout !== undefined) CONFIG.lossPayout = cfg.lossPayout;
+    } catch(e) {}
   }
 }
 
 async function postToSheets(payload) {
   if (APPS_SCRIPT_URL === "YOUR_APPS_SCRIPT_URL_HERE") {
-    // Fallback to localStorage
     if (payload.action === "undo") {
       delete appData.results[payload.matchId];
-    } else {
-      appData.results[payload.matchId] = { first: payload.first, second: payload.second, third: payload.third };
+    } else if (payload.action === "submit") {
+      appData.results[payload.matchId] = payload;
     }
     localStorage.setItem("dream11_pool_ipl2026_v1", JSON.stringify(appData));
     return true;
   }
   setLoading(true);
   try {
-    const res = await fetch(APPS_SCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify(payload)
-    });
+    const res = await fetch(APPS_SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
     const json = await res.json();
     setLoading(false);
     return json.success;
@@ -847,38 +1032,66 @@ function showToast(msg,type="success") {
 // ═══════════════════════════════════════════════════════
 // CALCULATIONS
 // ═══════════════════════════════════════════════════════
-function getTiePayout(r, p) {
-  // Returns {pay, pos} for player p in result r, handling ties
-  // Tie for 1st: first + firstTied each get (500+300)/2 = 400; third gets 100
-  // Tie for 2nd: first gets 500; second + secondTied each get (300+100)/2 = 200
-  const TIE1ST = (CONFIG.payouts[1] + CONFIG.payouts[2]) / 2; // 400
-  const TIE2ND = (CONFIG.payouts[2] + CONFIG.payouts[3]) / 2; // 200
+// Returns the config (participants, payouts, lossPayout) to use for a given result.
+// If the result has a configSnapshot (saved at submission time), use that.
+// Otherwise fall back to current CONFIG (backward-compat for old results).
+function getConfigForResult(r) {
+  if (r && r.configSnapshot) {
+    const cs = r.configSnapshot;
+    return {
+      participants: cs.participants || CONFIG.participants,
+      payouts: Array.isArray(cs.payouts) ? cs.payouts : CONFIG.payouts,
+      lossPayout: cs.lossPayout !== undefined ? cs.lossPayout : CONFIG.lossPayout
+    };
+  }
+  return {
+    participants: CONFIG.participants,
+    payouts: CONFIG.payouts,
+    lossPayout: CONFIG.lossPayout
+  };
+}
+
+// payouts = array e.g. [500, 300, 100] or [800, 600, 250, 0]
+function getTiePayout(r, p, payouts, lossPayout) {
+  const p1 = payouts[0]||0, p2 = payouts[1]||0, p3 = payouts[2]||0, p4 = payouts[3]||0;
+  const TIE1ST = (p1 + p2) / 2;
+  const TIE2ND = (p2 + p3) / 2;
   if (r.firstTied) {
     if (r.first === p || r.firstTied === p) return { pay: TIE1ST, pos: "tie1" };
-    if (r.third === p) return { pay: CONFIG.payouts[3], pos: "third" };
+    if (r.third === p) return { pay: p3, pos: "third" };
+    if (r.fourth === p) return { pay: p4, pos: "fourth" };
   } else if (r.secondTied) {
-    if (r.first === p) return { pay: CONFIG.payouts[1], pos: "first" };
+    if (r.first === p) return { pay: p1, pos: "first" };
     if (r.second === p || r.secondTied === p) return { pay: TIE2ND, pos: "tie2" };
+    if (r.fourth === p) return { pay: p4, pos: "fourth" };
   } else {
-    if (r.first === p) return { pay: CONFIG.payouts[1], pos: "first" };
-    if (r.second === p) return { pay: CONFIG.payouts[2], pos: "second" };
-    if (r.third === p) return { pay: CONFIG.payouts[3], pos: "third" };
+    if (r.first === p) return { pay: p1, pos: "first" };
+    if (r.second === p) return { pay: p2, pos: "second" };
+    if (r.third === p) return { pay: p3, pos: "third" };
+    if (r.fourth === p) return { pay: p4, pos: "fourth" };
   }
-  return { pay: CONFIG.lossPayout, pos: "loss" };
+  return { pay: lossPayout, pos: "loss" };
 }
 
 function getPlayerStats() {
-  const s={};
-  CONFIG.participants.forEach(p=>{ s[p]={total:0,matches:0,first:0,second:0,third:0,last5:[]}; });
-  MATCHES.forEach(m=>{
-    const r=appData.results[m.id]; if(!r) return;
-    CONFIG.participants.forEach(p=>{
-      const {pay, pos} = getTiePayout(r, p);
-      if(pos==="first"||pos==="tie1") s[p].first++;
-      else if(pos==="second"||pos==="tie2") s[p].second++;
-      else if(pos==="third") s[p].third++;
-      s[p].total+=pay; s[p].matches++;
-      s[p].last5.push(pay); if(s[p].last5.length>5) s[p].last5.shift();
+  const s = {};
+  // Start with current participants
+  CONFIG.participants.forEach(p => { s[p] = {total:0, matches:0, first:0, second:0, third:0, fourth:0, last5:[]}; });
+  MATCHES.forEach(m => {
+    const r = appData.results[m.id]; if (!r) return;
+    const cfg = getConfigForResult(r);
+    // Also track any historical participants not in current CONFIG
+    cfg.participants.forEach(p => {
+      if (!s[p]) s[p] = {total:0, matches:0, first:0, second:0, third:0, fourth:0, last5:[]};
+    });
+    cfg.participants.forEach(p => {
+      const {pay, pos} = getTiePayout(r, p, cfg.payouts, cfg.lossPayout);
+      if (pos==="first"||pos==="tie1") s[p].first++;
+      else if (pos==="second"||pos==="tie2") s[p].second++;
+      else if (pos==="third") s[p].third++;
+      else if (pos==="fourth") s[p].fourth++;
+      s[p].total += pay; s[p].matches++;
+      s[p].last5.push(pay); if (s[p].last5.length > 5) s[p].last5.shift();
     });
   });
   return s;
@@ -947,12 +1160,21 @@ function renderMatchDetail() {
     let dot=done?'<span class="match-status-completed"></span>':today?'<span class="match-status-today"></span>':'<span class="match-status-upcoming"></span>';
     let cells="";
     if(done){
+      const cfg = getConfigForResult(r);
       players.forEach(p=>{
-        const {pay, pos} = getTiePayout(r, p);
-        const cls = pos==="first"?"md-cell-first":pos==="tie1"?"md-cell-first":pos==="second"?"md-cell-second":pos==="tie2"?"md-cell-second":pos==="third"?"md-cell-third":"md-cell-loss";
+        if (!cfg.participants.includes(p)) {
+          cells += `<td class="md-cell-pending" title="Not in this match">—</td>`;
+          return;
+        }
+        const {pay, pos} = getTiePayout(r, p, cfg.payouts, cfg.lossPayout);
+        const cls = (pos==="first"||pos==="tie1") ? "md-cell-first"
+                  : (pos==="second"||pos==="tie2") ? "md-cell-second"
+                  : pos==="third" ? "md-cell-third"
+                  : pos==="fourth" ? "md-cell-fourth"
+                  : "md-cell-loss";
         const label = (pos==="tie1"||pos==="tie2") ? formatAmount(pay)+"*" : formatAmount(pay);
-        rt[p]+=pay;
-        cells+=`<td class="${cls}" title="${pos==="tie1"?"Tie for 1st":pos==="tie2"?"Tie for 2nd":""}">${label}</td>`;
+        rt[p] = (rt[p]||0) + pay;
+        cells+=`<td class="${cls}" title="${pos==="tie1"?"Tie 1st":pos==="tie2"?"Tie 2nd":""}">${label}</td>`;
       });
     } else {
       players.forEach(()=>{ cells+=`<td class="md-cell-pending">—</td>`; });
@@ -1014,22 +1236,23 @@ function onMatchSelected() {
   const r=appData.results[mid];
 
   if(r){
-    // Build submitted display respecting tie data
-    const TIE1ST = (CONFIG.payouts[1] + CONFIG.payouts[2]) / 2;
-    const TIE2ND = (CONFIG.payouts[2] + CONFIG.payouts[3]) / 2;
+    // Use the config snapshot from this result (not current CONFIG) for correct display
+    const cfg = getConfigForResult(r);
+    const p1=cfg.payouts[0]||0, p2=cfg.payouts[1]||0, p3=cfg.payouts[2]||0, p4=cfg.payouts[3]||0;
+    const TIE1ST = (p1+p2)/2, TIE2ND = (p2+p3)/2;
     let summary = "";
-    if(r.firstTied){
-      summary = `<strong style="color:var(--accent-gold)">🤝 Tie 1st:</strong> ${r.first} &amp; ${r.firstTied} (+₹${TIE1ST} each) &nbsp;
-        <strong style="color:var(--accent-bronze)">3rd:</strong> ${r.third} (+₹${CONFIG.payouts[3]})`;
-    } else if(r.secondTied){
-      summary = `<strong style="color:var(--accent-gold)">1st:</strong> ${r.first} (+₹${CONFIG.payouts[1]}) &nbsp;
-        <strong style="color:var(--accent-silver)">🤝 Tie 2nd:</strong> ${r.second} &amp; ${r.secondTied} (+₹${TIE2ND} each)`;
+    if (r.firstTied) {
+      summary = `<strong style="color:var(--accent-gold)">🤝 Tie 1st:</strong> ${r.first} & ${r.firstTied} (+₹${TIE1ST} each)<br>
+        <strong style="color:var(--accent-bronze)">3rd:</strong> ${r.third} (+₹${p3})${r.fourth?`<br><strong style="color:var(--accent-blue)">4th:</strong> ${r.fourth} (+₹${p4})`:""}`;
+    } else if (r.secondTied) {
+      summary = `<strong style="color:var(--accent-gold)">1st:</strong> ${r.first} (+₹${p1})<br>
+        <strong style="color:var(--accent-silver)">🤝 Tie 2nd:</strong> ${r.second} & ${r.secondTied} (+₹${TIE2ND} each)${r.fourth?`<br><strong style="color:var(--accent-blue)">4th:</strong> ${r.fourth} (+₹${p4})`:""}`;
     } else {
-      summary = `<strong style="color:var(--accent-gold)">1st:</strong> ${r.first} (+₹${CONFIG.payouts[1]}) &nbsp;
-        <strong style="color:var(--accent-silver)">2nd:</strong> ${r.second} (+₹${CONFIG.payouts[2]}) &nbsp;
-        <strong style="color:var(--accent-bronze)">3rd:</strong> ${r.third} (+₹${CONFIG.payouts[3]})`;
+      summary = `<strong style="color:var(--accent-gold)">1st:</strong> ${r.first} (+₹${p1})<br>
+        <strong style="color:var(--accent-silver)">2nd:</strong> ${r.second} (+₹${p2})<br>
+        <strong style="color:var(--accent-bronze)">3rd:</strong> ${r.third} (+₹${p3})${r.fourth?`<br><strong style="color:var(--accent-blue)">4th:</strong> ${r.fourth} (+₹${p4})`:""}`;
     }
-    area.innerHTML=`<div class="already-submitted"><h3>Results Submitted</h3><p style="margin-bottom:16px;color:var(--text-secondary)">${summary}</p><button class="undo-btn" onclick="undoResult(${mid})">Undo This Result</button></div>`;
+    area.innerHTML=`<div class="already-submitted"><h3>✅ Results Submitted</h3><p style="margin-bottom:16px;color:var(--text-secondary);line-height:1.7">${summary}</p><button class="undo-btn" onclick="undoResult(${mid})">↩ Undo This Result</button></div>`;
     return;
   }
 
@@ -1037,87 +1260,82 @@ function onMatchSelected() {
 }
 
 function renderInputForm(mid) {
-  const area=document.getElementById("input-form-area");
-  const ps=CONFIG.participants;
-  const opts=`<option value=""></option>${ps.map(p=>`<option value="${p}">${p}</option>`).join("")}`;
-  const TIE1ST = (CONFIG.payouts[1] + CONFIG.payouts[2]) / 2;
-  const TIE2ND = (CONFIG.payouts[2] + CONFIG.payouts[3]) / 2;
-
+  const area = document.getElementById("input-form-area");
+  const ps = CONFIG.participants;
+  const payouts = CONFIG.payouts;
+  const wc = CONFIG.winnerCount || 3;
   const isTie1 = tieState === "first";
   const isTie2 = tieState === "second";
+  const TIE1ST = ((payouts[0]||0) + (payouts[1]||0)) / 2;
+  const TIE2ND = ((payouts[1]||0) + (payouts[2]||0)) / 2;
 
-  // 1st Place card
-  const card1 = `<div class="input-card" id="card-first">
+  function opts(placeholder) {
+    return `<option value="">${placeholder}</option>${ps.map(p=>`<option value="${p}">${p}</option>`).join("")}`;
+  }
+
+  // Card 1
+  const card1 = `<div class="input-card">
     <div class="input-card-header">
       <div class="position-badge pos-1">1</div>
       <div>
         <div class="input-card-title">1st Place</div>
-        <div class="input-card-prize">${isTie1 ? `🤝 Tie — each wins +₹${TIE1ST}` : `Wins +₹${CONFIG.payouts[1]}`}</div>
+        <div class="input-card-prize">${isTie1 ? `🤝 Tie — each +₹${TIE1ST}` : `Wins +₹${payouts[0]||0}`}</div>
       </div>
       <button class="tie-btn${isTie1?" remove":""}" onclick="toggleTie('first',${mid})">${isTie1?"✕ Remove Tie":"+ Add Tie"}</button>
     </div>
-    <select class="player-select" id="sel-first" onchange="validateSelections()">
-      <option value="">Select winner...</option>${ps.map(p=>`<option value="${p}">${p}</option>`).join("")}
-    </select>
-    ${isTie1 ? `<div class="tie-second-row">
-      <span class="tie-label">🤝 Also 1st:</span>
-      <select class="player-select" id="sel-first-tied" onchange="validateSelections()" style="flex:1">
-        <option value="">Select tied player...</option>${ps.map(p=>`<option value="${p}">${p}</option>`).join("")}
-      </select>
-    </div>
-    <div class="tie-prize-note">Each tied player wins +₹${TIE1ST} (sharing 1st+2nd prizes)</div>` : ""}
+    <select class="player-select" id="sel-first" onchange="validateSelections()">${opts("Select winner...")}</select>
+    ${isTie1 ? `<div class="tie-second-row"><span class="tie-label">🤝 Also 1st:</span>
+      <select class="player-select" id="sel-first-tied" onchange="validateSelections()" style="flex:1">${opts("Select tied player...")}</select>
+    </div><div class="tie-prize-note">Each gets +₹${TIE1ST} (sharing 1st+2nd prizes)</div>` : ""}
   </div>`;
 
-  // 2nd Place card — disabled when tie for 1st
+  // Card 2
   const card2 = isTie1
-    ? `<div class="input-card disabled-card" id="card-second">
-        <div class="input-card-header">
-          <div class="position-badge pos-2">2</div>
-          <div><div class="input-card-title">2nd Place</div><div class="input-card-prize">+₹${CONFIG.payouts[2]}</div></div>
-        </div>
-        <div class="disabled-reason">Disabled — 2nd prize absorbed into tie for 1st</div>
+    ? `<div class="input-card disabled-card">
+        <div class="input-card-header"><div class="position-badge pos-2">2</div>
+          <div><div class="input-card-title">2nd Place</div><div class="input-card-prize">+₹${payouts[1]||0}</div></div>
+        </div><div class="disabled-reason">Disabled — prize absorbed into 1st-place tie</div>
       </div>`
-    : `<div class="input-card" id="card-second">
+    : `<div class="input-card">
         <div class="input-card-header">
           <div class="position-badge pos-2">2</div>
-          <div>
-            <div class="input-card-title">2nd Place</div>
-            <div class="input-card-prize">${isTie2 ? `🤝 Tie — each wins +₹${TIE2ND}` : `Wins +₹${CONFIG.payouts[2]}`}</div>
+          <div><div class="input-card-title">2nd Place</div>
+            <div class="input-card-prize">${isTie2 ? `🤝 Tie — each +₹${TIE2ND}` : `Wins +₹${payouts[1]||0}`}</div>
           </div>
           <button class="tie-btn${isTie2?" remove":""}" onclick="toggleTie('second',${mid})">${isTie2?"✕ Remove Tie":"+ Add Tie"}</button>
         </div>
-        <select class="player-select" id="sel-second" onchange="validateSelections()">
-          <option value="">Select runner-up...</option>${ps.map(p=>`<option value="${p}">${p}</option>`).join("")}
-        </select>
-        ${isTie2 ? `<div class="tie-second-row">
-          <span class="tie-label">🤝 Also 2nd:</span>
-          <select class="player-select" id="sel-second-tied" onchange="validateSelections()" style="flex:1">
-            <option value="">Select tied player...</option>${ps.map(p=>`<option value="${p}">${p}</option>`).join("")}
-          </select>
-        </div>
-        <div class="tie-prize-note">Each tied player wins +₹${TIE2ND} (sharing 2nd+3rd prizes)</div>` : ""}
+        <select class="player-select" id="sel-second" onchange="validateSelections()">${opts("Select runner-up...")}</select>
+        ${isTie2 ? `<div class="tie-second-row"><span class="tie-label">🤝 Also 2nd:</span>
+          <select class="player-select" id="sel-second-tied" onchange="validateSelections()" style="flex:1">${opts("Select tied player...")}</select>
+        </div><div class="tie-prize-note">Each gets +₹${TIE2ND} (sharing 2nd+3rd prizes)</div>` : ""}
       </div>`;
 
-  // 3rd Place card — disabled when tie for 2nd
+  // Card 3
   const card3 = isTie2
-    ? `<div class="input-card disabled-card" id="card-third">
-        <div class="input-card-header">
-          <div class="position-badge pos-3">3</div>
-          <div><div class="input-card-title">3rd Place</div><div class="input-card-prize">+₹${CONFIG.payouts[3]}</div></div>
-        </div>
-        <div class="disabled-reason">Disabled — 3rd prize absorbed into tie for 2nd</div>
+    ? `<div class="input-card disabled-card">
+        <div class="input-card-header"><div class="position-badge pos-3">3</div>
+          <div><div class="input-card-title">3rd Place</div><div class="input-card-prize">+₹${payouts[2]||0}</div></div>
+        </div><div class="disabled-reason">Disabled — prize absorbed into 2nd-place tie</div>
       </div>`
-    : `<div class="input-card" id="card-third">
-        <div class="input-card-header">
-          <div class="position-badge pos-3">3</div>
-          <div><div class="input-card-title">3rd Place</div><div class="input-card-prize">Wins +₹${CONFIG.payouts[3]}</div></div>
+    : `<div class="input-card">
+        <div class="input-card-header"><div class="position-badge pos-3">3</div>
+          <div><div class="input-card-title">3rd Place</div><div class="input-card-prize">Wins +₹${payouts[2]||0}</div></div>
         </div>
-        <select class="player-select" id="sel-third" onchange="validateSelections()">
-          <option value="">Select 3rd place...</option>${ps.map(p=>`<option value="${p}">${p}</option>`).join("")}
-        </select>
+        <select class="player-select" id="sel-third" onchange="validateSelections()">${opts("Select 3rd place...")}</select>
       </div>`;
 
-  area.innerHTML = `${card1}${card2}${card3}
+  // Card 4 — only shown when winnerCount >= 4
+  const card4 = wc >= 4
+    ? `<div class="input-card">
+        <div class="input-card-header"><div class="position-badge pos-4">4</div>
+          <div><div class="input-card-title">4th Place</div>
+            <div class="input-card-prize">${(payouts[3]||0) === 0 ? "Entry back (₹0 net)" : `Wins +₹${payouts[3]}`}</div>
+          </div>
+        </div>
+        <select class="player-select" id="sel-fourth" onchange="validateSelections()">${opts("Select 4th place...")}</select>
+      </div>` : "";
+
+  area.innerHTML = `${card1}${card2}${card3}${card4}
     <div class="validation-error" id="val-error"></div>
     <button class="submit-btn" id="submit-btn" onclick="submitResult(${mid})" disabled>Submit Results</button>`;
 }
@@ -1132,74 +1350,90 @@ function toggleTie(position, mid) {
 }
 
 function validateSelections() {
-  const btn=document.getElementById("submit-btn");
-  const err=document.getElementById("val-error");
+  const btn = document.getElementById("submit-btn");
+  const err = document.getElementById("val-error");
+  if (!btn || !err) return;
+  const wc = CONFIG.winnerCount || 3;
 
-  const f = (document.getElementById("sel-first")||{}).value || "";
-  const ft = tieState==="first" ? ((document.getElementById("sel-first-tied")||{}).value || "") : null;
-  const s = (tieState!=="first") ? ((document.getElementById("sel-second")||{}).value || "") : null;
-  const st = tieState==="second" ? ((document.getElementById("sel-second-tied")||{}).value || "") : null;
-  const t = (tieState!=="second") ? ((document.getElementById("sel-third")||{}).value || "") : null;
+  const f  = (document.getElementById("sel-first")||{}).value || "";
+  const ft = tieState==="first"  ? ((document.getElementById("sel-first-tied")||{}).value||"") : null;
+  const s  = tieState!=="first"  ? ((document.getElementById("sel-second")||{}).value||"") : null;
+  const st = tieState==="second" ? ((document.getElementById("sel-second-tied")||{}).value||"") : null;
+  const t  = tieState!=="second" ? ((document.getElementById("sel-third")||{}).value||"") : null;
+  const fo = wc >= 4             ? ((document.getElementById("sel-fourth")||{}).value||"") : null;
 
-  // Collect all active values
-  const active = [f, ft, s, st, t].filter(v=>v!==null&&v!=="");
-
-  if(new Set(active).size !== active.length){
-    err.textContent="Each player can only be selected once!"; err.style.display="block"; btn.disabled=true; return;
+  const active = [f, ft, s, st, t, fo].filter(v => v !== null && v !== "");
+  if (new Set(active).size !== active.length) {
+    err.textContent = "Each player can only be selected once!"; err.style.display = "block"; btn.disabled = true; return;
   }
 
-  // All required fields must be filled
   const required = [f];
-  if(tieState==="first") { required.push(ft); required.push(t); }
-  else if(tieState==="second") { required.push(s); required.push(st); }
+  if (tieState==="first")  { required.push(ft); required.push(t); }
+  else if (tieState==="second") { required.push(s); required.push(st); }
   else { required.push(s); required.push(t); }
+  if (wc >= 4) required.push(fo);
 
-  err.style.display="none";
-  btn.disabled = required.some(v=>!v);
+  err.style.display = "none";
+  btn.disabled = required.some(v => !v);
 }
 
 async function submitResult(mid) {
   const f = (document.getElementById("sel-first")||{}).value || "";
-  if(!f) return;
+  if (!f) return;
+  // Require PIN before submitting
+  if (!sessionAuthenticated) {
+    showPinModal(() => submitResult(mid));
+    return;
+  }
+  const wc = CONFIG.winnerCount || 3;
 
-  let payload = { action:"submit", matchId:mid, first:f };
+  // Snapshot of current config — locked forever with this result
+  const configSnapshot = {
+    participants: [...CONFIG.participants],
+    entryFee: CONFIG.entryFee,
+    payouts: [...CONFIG.payouts],
+    winnerCount: CONFIG.winnerCount,
+    lossPayout: CONFIG.lossPayout
+  };
 
-  if(tieState==="first"){
+  let payload = { action:"submit", matchId:mid, first:f, configSnapshot };
+  let resultEntry = { first:f, configSnapshot };
+
+  if (tieState === "first") {
     const ft = (document.getElementById("sel-first-tied")||{}).value || "";
-    const t = (document.getElementById("sel-third")||{}).value || "";
-    if(!ft||!t) return;
-    payload.firstTied = ft;
-    payload.third = t;
-    const TIE1ST = (CONFIG.payouts[1] + CONFIG.payouts[2]) / 2;
-    const ok = await postToSheets(payload);
-    if(!ok) return;
-    appData.results[mid] = {first:f, firstTied:ft, third:t};
-    showToast(`Match ${mid} saved! 🤝 ${f} &amp; ${ft} tie for 1st!`, "success");
-  } else if(tieState==="second"){
-    const s = (document.getElementById("sel-second")||{}).value || "";
+    const t  = (document.getElementById("sel-third")||{}).value || "";
+    const fo = wc>=4 ? ((document.getElementById("sel-fourth")||{}).value||"") : "";
+    if (!ft || !t || (wc>=4&&!fo)) return;
+    payload.firstTied = ft; payload.third = t; if(fo) payload.fourth = fo;
+    resultEntry = {...resultEntry, firstTied:ft, third:t, ...(fo?{fourth:fo}:{}) };
+    const ok = await postToSheets(payload); if (!ok) return;
+    appData.results[mid] = resultEntry;
+    showToast(`Match ${mid} saved! 🤝 ${f} & ${ft} tie for 1st!`, "success");
+  } else if (tieState === "second") {
+    const s  = (document.getElementById("sel-second")||{}).value || "";
     const st = (document.getElementById("sel-second-tied")||{}).value || "";
-    if(!s||!st) return;
-    payload.second = s;
-    payload.secondTied = st;
-    const ok = await postToSheets(payload);
-    if(!ok) return;
-    appData.results[mid] = {first:f, second:s, secondTied:st};
-    showToast(`Match ${mid} saved! ${f} wins, 🤝 ${s} &amp; ${st} tie for 2nd!`, "success");
+    const fo = wc>=4 ? ((document.getElementById("sel-fourth")||{}).value||"") : "";
+    if (!s || !st || (wc>=4&&!fo)) return;
+    payload.second = s; payload.secondTied = st; if(fo) payload.fourth = fo;
+    resultEntry = {...resultEntry, second:s, secondTied:st, ...(fo?{fourth:fo}:{}) };
+    const ok = await postToSheets(payload); if (!ok) return;
+    appData.results[mid] = resultEntry;
+    showToast(`Match ${mid} saved! ${f} wins, 🤝 ${s} & ${st} tie for 2nd!`, "success");
   } else {
-    const s = (document.getElementById("sel-second")||{}).value || "";
-    const t = (document.getElementById("sel-third")||{}).value || "";
-    if(!s||!t) return;
-    payload.second = s;
-    payload.third = t;
-    const ok = await postToSheets(payload);
-    if(!ok) return;
-    appData.results[mid] = {first:f, second:s, third:t};
+    const s  = (document.getElementById("sel-second")||{}).value || "";
+    const t  = (document.getElementById("sel-third")||{}).value || "";
+    const fo = wc>=4 ? ((document.getElementById("sel-fourth")||{}).value||"") : "";
+    if (!s || !t || (wc>=4&&!fo)) return;
+    payload.second = s; payload.third = t; if(fo) payload.fourth = fo;
+    resultEntry = {...resultEntry, second:s, third:t, ...(fo?{fourth:fo}:{}) };
+    const ok = await postToSheets(payload); if (!ok) return;
+    appData.results[mid] = resultEntry;
     showToast(`Match ${mid} saved! ${f} takes 1st!`, "success");
   }
 
   renderAll();
-  const ni=MATCHES.find(m=>m.id>mid&&!appData.results[m.id]);
-  if(ni) document.getElementById("match-select").value=ni.id;
+  const ni = MATCHES.find(m => m.id > mid && !appData.results[m.id]);
+  if (ni) document.getElementById("match-select").value = ni.id;
   tieState = "none";
   onMatchSelected();
 }
@@ -1223,19 +1457,272 @@ function renderHeaderStats() {
 }
 
 function switchTab(tab) {
-  document.querySelectorAll(".tab-btn, .nav-btn").forEach(b=>b.classList.remove("active"));
-  document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active"));
-  document.querySelectorAll(`[data-tab="${tab}"]`).forEach(b=>b.classList.add("active"));
-  document.getElementById("tab-"+tab).classList.add("active");
-  window.scrollTo({top:0, behavior:"smooth"});
+  doSwitchTab(tab);
 }
 
-document.querySelectorAll(".tab-btn, .nav-btn").forEach(btn=>{
-  btn.addEventListener("click",()=>switchTab(btn.dataset.tab));
+function doSwitchTab(tab) {
+  document.querySelectorAll(".tab-btn, .nav-btn").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
+  document.querySelectorAll(`[data-tab="${tab}"]`).forEach(b => b.classList.add("active"));
+  document.getElementById("tab-" + tab).classList.add("active");
+  if (tab === "settings") renderSettings();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+document.querySelectorAll(".tab-btn, .nav-btn").forEach(btn => {
+  btn.addEventListener("click", () => switchTab(btn.dataset.tab));
 });
 
 function renderAll() { renderHeaderStats(); renderLeaderboard(); renderMatchDetail(); renderInput(); }
 
+// ═══════════════════════════════════════════════════════
+// PIN AUTHENTICATION
+// ═══════════════════════════════════════════════════════
+// unlockTab removed — tabs are freely accessible; PIN gate is on actions
+
+function showPinModal(callback) {
+  pinCallback = callback;
+  pinEntry = "";
+  updatePinDots();
+  document.getElementById("pin-error").textContent = "";
+  document.getElementById("pin-overlay").style.display = "flex";
+}
+
+function hidePinModal() {
+  document.getElementById("pin-overlay").style.display = "none";
+  pinEntry = "";
+  pinCallback = null;
+}
+
+function pinKey(digit) {
+  if (pinEntry.length >= 8) return;
+  pinEntry += digit;
+  updatePinDots();
+  if (pinEntry.length === 8) setTimeout(checkPin, 120);
+}
+
+function pinBackspace() {
+  pinEntry = pinEntry.slice(0, -1);
+  updatePinDots();
+  document.getElementById("pin-error").textContent = "";
+}
+
+function updatePinDots() {
+  for (let i = 0; i < 8; i++) {
+    const dot = document.getElementById("pd" + i);
+    if (dot) dot.classList.toggle("filled", i < pinEntry.length);
+  }
+}
+
+function checkPin() {
+  if (pinEntry === serverPin) {
+    sessionAuthenticated = true;
+    hidePinModal();
+    updateAuthUI();
+    if (pinCallback) { const cb = pinCallback; pinCallback = null; cb(); }
+  } else {
+    document.getElementById("pin-error").textContent = "Incorrect PIN. Try again.";
+    pinEntry = "";
+    updatePinDots();
+  }
+}
+
+// updateAuthUI is a no-op — tabs are always visible; PIN gates individual actions
+function updateAuthUI() {}
+
+// ═══════════════════════════════════════════════════════
+// SETTINGS TAB
+// ═══════════════════════════════════════════════════════
+function renderSettings() {
+  const form = document.getElementById("settings-form");
+  if (!form) return;
+
+  const ps  = CONFIG.participants;
+  const pay = CONFIG.payouts;
+  const wc  = CONFIG.winnerCount || 3;
+  const fee = CONFIG.entryFee;
+
+  form.innerHTML = `
+    <!-- PIN section -->
+    <div class="settings-section">
+      <div class="settings-section-title">🔐 Change Admin PIN</div>
+      <label class="settings-label">Current PIN</label>
+      <input type="password" id="s-cur-pin" class="settings-input" maxlength="8" placeholder="Current 8-digit PIN">
+      <label class="settings-label">New PIN</label>
+      <input type="password" id="s-new-pin" class="settings-input" maxlength="8" placeholder="New 8-digit PIN">
+      <label class="settings-label">Confirm New PIN</label>
+      <input type="password" id="s-cfm-pin" class="settings-input" maxlength="8" placeholder="Confirm new PIN">
+      <button class="save-cfg-btn secondary" onclick="savePin()">Update PIN</button>
+    </div>
+
+    <!-- Players section -->
+    <div class="settings-section">
+      <div class="settings-section-title">👥 Players <span style="font-size:11px;color:var(--text-muted);font-weight:500;text-transform:none;letter-spacing:0">(${ps.length} active)</span></div>
+      <div id="players-list">
+        ${ps.map((p, i) => `<div class="player-row">
+          <span class="player-num">${i+1}.</span>
+          <input type="text" id="pname-${i}" value="${p.replace(/"/g,'&quot;')}" placeholder="Player name">
+          <button class="remove-player-btn" onclick="removePlayer(${i})" title="Remove">✕</button>
+        </div>`).join("")}
+      </div>
+      <button class="add-player-btn" onclick="addSettingsPlayer()">+ Add New Player</button>
+    </div>
+
+    <!-- Money config section -->
+    <div class="settings-section">
+      <div class="settings-section-title">💰 Money Configuration</div>
+      <label class="settings-label">Entry Fee per Person (₹)</label>
+      <input type="number" id="s-fee" class="settings-input" value="${fee}" min="1" oninput="updateZeroSum()">
+      <label class="settings-label">Number of Winners</label>
+      <div class="winner-count-row">
+        ${[3,4].map(n=>`<button class="wc-btn${wc===n?" active":""}" onclick="setWinnerCount(${n})">${n} Winners</button>`).join("")}
+      </div>
+      <label class="settings-label">Net Payout per Winner (after entry fee)</label>
+      <div class="payout-grid" id="payout-grid">
+        ${Array.from({length:wc},(_,i)=>`<div class="payout-item">
+          <label>${["🥇 1st","🥈 2nd","🥉 3rd","4️⃣ 4th"][i]}</label>
+          <input type="number" id="s-pay-${i}" value="${pay[i]!==undefined?pay[i]:0}" oninput="updateZeroSum()">
+        </div>`).join("")}
+      </div>
+      <div style="margin-top:10px">
+        <span class="settings-label" style="display:inline">Loss per player (auto):</span>
+        <strong id="s-loss-val" style="color:var(--accent-red);font-size:14px;margin-left:8px"></strong>
+      </div>
+      <div id="zero-sum-box" class="zero-sum-box" style="margin-top:10px"></div>
+    </div>
+
+    <div class="settings-warning">
+      ⚠️ Saving config only affects future match submissions. All previously recorded results are permanently tied to the config that was active when they were submitted.
+    </div>
+    <button class="save-cfg-btn" onclick="saveSettingsConfig()" id="save-cfg-btn">
+      💾 Save Config (future matches only)
+    </button>
+  `;
+  updateZeroSum();
+}
+
+function setWinnerCount(n) {
+  syncPlayerInputs();
+  CONFIG.winnerCount = n;
+  while (CONFIG.payouts.length < n) CONFIG.payouts.push(0);
+  while (CONFIG.payouts.length > n) CONFIG.payouts.pop();
+  renderSettings();
+}
+
+function addSettingsPlayer() {
+  syncPlayerInputs();
+  CONFIG.participants.push("New Player");
+  renderSettings();
+  setTimeout(() => {
+    const i = CONFIG.participants.length - 1;
+    const el = document.getElementById("pname-" + i);
+    if (el) { el.focus(); el.select(); }
+  }, 50);
+}
+
+function removePlayer(i) {
+  syncPlayerInputs();
+  if (CONFIG.participants.length <= 2) { showToast("Minimum 2 players required", "error"); return; }
+  CONFIG.participants.splice(i, 1);
+  renderSettings();
+}
+
+function syncPlayerInputs() {
+  CONFIG.participants.forEach((_, i) => {
+    const el = document.getElementById("pname-" + i);
+    if (el && el.value.trim()) CONFIG.participants[i] = el.value.trim();
+  });
+}
+
+function updateZeroSum() {
+  const feeEl = document.getElementById("s-fee");
+  const lossEl = document.getElementById("s-loss-val");
+  const boxEl  = document.getElementById("zero-sum-box");
+  if (!feeEl || !lossEl || !boxEl) return;
+
+  const fee = parseFloat(feeEl.value) || 0;
+  const wc  = CONFIG.winnerCount || 3;
+  const n   = CONFIG.participants.length;
+  let totalWinNet = 0;
+  for (let i = 0; i < wc; i++) {
+    totalWinNet += parseFloat((document.getElementById("s-pay-"+i)||{}).value||0);
+  }
+  const losers = n - wc;
+  const autoLoss = losers > 0 ? -(totalWinNet / losers) : 0;
+  const pool = n * fee;
+
+  lossEl.textContent = `–₹${autoLoss.toFixed(0)}`;
+
+  const valid = losers > 0 && fee > 0 && Number.isFinite(autoLoss);
+  if (valid) {
+    boxEl.className = "zero-sum-box zero-sum-ok";
+    boxEl.textContent = `✅ Zero-sum ✓  Pool: ₹${pool} | ${wc} winners share ₹${totalWinNet} net | ${losers} losers × –₹${autoLoss.toFixed(0)}`;
+  } else if (losers <= 0) {
+    boxEl.className = "zero-sum-box zero-sum-bad";
+    boxEl.textContent = `❌ ${n} players with ${wc} winners — need at least ${wc+1} players`;
+  } else {
+    boxEl.className = "zero-sum-box zero-sum-bad";
+    boxEl.textContent = "❌ Invalid configuration";
+  }
+  return { autoLoss, valid };
+}
+
+async function savePin() {
+  const cur = (document.getElementById("s-cur-pin")||{}).value || "";
+  const nw  = (document.getElementById("s-new-pin")||{}).value || "";
+  const cfm = (document.getElementById("s-cfm-pin")||{}).value || "";
+  if (cur !== serverPin) { showToast("Current PIN is incorrect", "error"); return; }
+  if (!/^\d{8}$/.test(nw)) { showToast("New PIN must be exactly 8 digits", "error"); return; }
+  if (nw !== cfm) { showToast("PINs don't match", "error"); return; }
+  const ok = await postToSheets({ action:"saveSetting", key:"pin", value:nw });
+  if (ok) {
+    serverPin = nw;
+    showToast("PIN updated! 🔐", "success");
+    document.getElementById("s-cur-pin").value = "";
+    document.getElementById("s-new-pin").value = "";
+    document.getElementById("s-cfm-pin").value = "";
+  }
+}
+
+async function saveSettingsConfig() {
+  // Require PIN before saving config
+  if (!sessionAuthenticated) {
+    showPinModal(() => saveSettingsConfig());
+    return;
+  }
+  syncPlayerInputs();
+  const players = CONFIG.participants.filter(p => p.trim().length > 0);
+  if (players.length < 2) { showToast("Need at least 2 players", "error"); return; }
+  const fee = parseFloat((document.getElementById("s-fee")||{}).value);
+  if (!fee || fee <= 0) { showToast("Invalid entry fee", "error"); return; }
+  const wc = CONFIG.winnerCount;
+  const payouts = [];
+  for (let i = 0; i < wc; i++) {
+    payouts.push(parseFloat((document.getElementById("s-pay-"+i)||{}).value)||0);
+  }
+  const zs = updateZeroSum();
+  if (!zs || !zs.valid) { showToast("Invalid config — check player count vs winners", "error"); return; }
+
+  CONFIG.participants = players;
+  CONFIG.entryFee = fee;
+  CONFIG.payouts = payouts;
+  CONFIG.lossPayout = -zs.autoLoss;
+
+  const ok = await postToSheets({
+    action: "saveSetting",
+    key: "config",
+    value: JSON.stringify({ participants:CONFIG.participants, entryFee:CONFIG.entryFee, payouts:CONFIG.payouts, winnerCount:CONFIG.winnerCount, lossPayout:CONFIG.lossPayout })
+  });
+  if (ok) {
+    showToast("Config saved! Future matches will use new settings ✅", "success");
+    renderAll();
+    renderSettings(); // refresh to show updated state
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
 // Initial load from Google Sheets, then auto-refresh every 30 seconds
 fetchFromSheets();
 setInterval(fetchFromSheets, 30000);
