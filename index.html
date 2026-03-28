@@ -2,12 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Dream11 Pool Tracker — IPL 2026</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  /* Prevent double-tap zoom on all interactive elements */
+  button, select, input, a, label { touch-action: manipulation; }
 
   :root {
     --bg-primary: #faf6f1;
@@ -32,13 +34,19 @@
     --shadow-lg: 0 8px 32px rgba(120,80,40,0.12);
   }
 
-  html, body {
+  html {
+    height: 100%;
+    overflow: hidden;
+  }
+  body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     background: var(--bg-primary);
     color: var(--text-primary);
-    min-height: 100vh;
-    /* Prevent iOS rubber-band bounce from fighting user scroll */
+    height: 100%;
+    overflow: hidden;
     overscroll-behavior: none;
+    display: flex;
+    flex-direction: column;
   }
 
   /* ─── HEADER ─── */
@@ -49,8 +57,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    position: sticky;
-    top: 0;
+    flex-shrink: 0;
     z-index: 100;
     box-shadow: 0 2px 16px rgba(180,130,80,0.08);
   }
@@ -91,6 +98,7 @@
     display: flex; gap: 4px; padding: 10px 32px;
     background: var(--bg-card);
     border-bottom: 1px solid var(--border-light);
+    flex-shrink: 0;
   }
 
   .tab-btn {
@@ -111,9 +119,14 @@
   .tab-content {
     display: none; padding: 24px 32px;
     animation: fadeIn 0.3s ease;
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overscroll-behavior-y: none;
+    -webkit-overflow-scrolling: touch;
+    min-height: 0;
   }
 
-  .tab-content.active { display: block; }
+  .tab-content.active { display: block; flex: 1 1 auto; min-height: 0; }
 
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(6px); }
@@ -435,7 +448,7 @@
   /* ─── BOTTOM NAV (mobile only) ─── */
   .bottom-nav {
     display: none;
-    position: fixed; bottom: 0; left: 0; right: 0;
+    flex-shrink: 0;
     background: #fff;
     border-top: 1.5px solid var(--border);
     padding: 6px 0;
@@ -456,13 +469,12 @@
 
   /* ─── MOBILE ─── */
   @media (max-width: 768px) {
-    body { overflow-x: hidden; }
+    body { height: 100svh; height: 100dvh; }
 
     /* Compact header */
     .header {
       padding: 10px 14px 8px;
       flex-wrap: wrap; gap: 6px;
-      position: sticky; top: 0;
     }
     .header-left { gap: 10px; }
     .logo { width: 34px; height: 34px; font-size: 12px; border-radius: 9px; flex-shrink: 0; }
@@ -470,7 +482,7 @@
     .header-subtitle { font-size: 10px; }
     .header-stats {
       width: 100%;
-      display: grid; grid-template-columns: repeat(4, 1fr);
+      display: grid; grid-template-columns: repeat(3, 1fr);
       background: rgba(212,136,15,0.07);
       border-radius: 10px; padding: 7px 4px; gap: 0;
     }
@@ -481,8 +493,18 @@
     /* Hide top tabs on mobile — use bottom nav instead */
     .tab-bar { display: none; }
 
-    /* Tab content with bottom nav clearance */
-    .tab-content { padding: 12px 12px 76px; }
+    /* Tab content fills remaining flex space — scrolls internally, no rubber band */
+    .tab-content {
+      flex: 1 1 auto;
+      min-height: 0;
+      padding: 12px 12px 20px;
+      overflow-y: auto;
+      overscroll-behavior-y: none;
+    }
+    .tab-content.active { display: flex; flex-direction: column; }
+
+    /* Prevent iOS zoom on inputs — must be >= 16px */
+    input, select, textarea { font-size: 16px !important; }
 
     /* ── Podium: 3 cards in a row, gold elevated ── */
     .podium {
@@ -528,7 +550,7 @@
     .input-section { max-width: 100%; }
     .today-match-card { padding: 18px 14px; border-radius: 14px; }
     .today-match-teams { font-size: 22px; }
-    .match-selector select, .player-select { padding: 13px 14px; font-size: 15px; }
+    .match-selector select, .player-select { padding: 13px 14px; }
     .input-card { padding: 16px; }
     .submit-btn { padding: 16px; font-size: 15px; }
     .undo-btn { padding: 13px; }
@@ -536,8 +558,8 @@
     /* ── Toast above bottom nav ── */
     .toast { left: 12px; right: 12px; bottom: 72px; text-align: center; font-size: 13px; padding: 12px 16px; }
 
-    /* Show bottom nav */
-    .bottom-nav { display: flex; }
+    /* Show bottom nav — flex row in the flow, not fixed */
+    .bottom-nav { display: flex; flex-shrink: 0; position: relative; }
   }
 
   /* Extra small phones */
@@ -695,10 +717,6 @@
       <div class="header-stat-value" id="stat-pool">0</div>
       <div class="header-stat-label">Total Pool</div>
     </div>
-    <div class="header-stat" style="font-size:11px;color:var(--text-muted)">
-      <div id="sync-status" style="font-size:12px;font-weight:600">⟳ Loading…</div>
-      <div class="header-stat-label">Live Sync</div>
-    </div>
   </div>
 </div>
 
@@ -744,7 +762,6 @@
       <div class="today-label" id="today-label">Today's Match</div>
       <div class="today-match-teams" id="today-teams">—</div>
       <div class="today-match-date" id="today-date"></div>
-      <div class="today-match-number" id="today-number"></div>
     </div>
     <div class="match-selector">
       <label>Select Match</label>
@@ -1119,7 +1136,6 @@ function renderLeaderboard() {
         <div class="podium-avatar" style="background:${getColor(pi)}">${getInitials(name)}</div>
         <div class="podium-name">${name}</div>
         <div class="podium-amount ${amountClass(s.total)}">${formatAmount(s.total)}</div>
-        <div class="podium-matches">${s.matches} matches played</div>
       </div>`;
     }).join("");
   }
@@ -1182,12 +1198,6 @@ function renderMatchDetail() {
 
     rows+=`<tr${today?' style="background:rgba(212,136,15,0.06)"':""}>
       <td>${m.id}</td><td>${dot}${m.teams}</td><td>${formatDate(m.date)}</td>${cells}</tr>`;
-
-    const nm=MATCHES[idx+1];
-    const isLast=done&&(!nm||!appData.results[nm.id]);
-    if(done&&(m.id%10===0||isLast)){
-      rows+=`<tr class="running-total"><td></td><td colspan="2" style="font-weight:700;color:var(--accent-gold)">Running Total (Match ${m.id})</td>${players.map(p=>`<td class="${amountClass(rt[p])}">${formatAmount(rt[p])}</td>`).join("")}</tr>`;
-    }
   });
 
   document.getElementById("md-body").innerHTML=rows;
@@ -1213,15 +1223,14 @@ function renderInput() {
 function updateTodayCard() {
   const tm=MATCHES.find(m=>isToday(m.date));
   const lEl=document.getElementById("today-label"), tEl=document.getElementById("today-teams");
-  const dEl=document.getElementById("today-date"), nEl=document.getElementById("today-number");
+  const dEl=document.getElementById("today-date");
   if(tm){
-    lEl.textContent=appData.results[tm.id]?"Today's Match (Completed)":"Today's Match";
+    lEl.textContent=appData.results[tm.id]?"Completed":"Today's Match";
     tEl.textContent=tm.teams; dEl.textContent=formatDateFull(tm.date);
-    nEl.textContent=`Match ${tm.id} of ${MATCHES.length}`;
   } else {
     const nm=MATCHES.find(m=>!isPast(m.date)&&!isToday(m.date));
-    if(nm){ lEl.textContent="Next Match"; tEl.textContent=nm.teams; dEl.textContent=formatDateFull(nm.date); nEl.textContent=`Match ${nm.id} of ${MATCHES.length}`; }
-    else { lEl.textContent="Season"; tEl.textContent="All Matches Completed"; dEl.textContent=""; nEl.textContent=""; }
+    if(nm){ lEl.textContent="Next Match"; tEl.textContent=nm.teams; dEl.textContent=formatDateFull(nm.date); }
+    else { lEl.textContent="Season"; tEl.textContent="All Matches Completed"; dEl.textContent=""; }
   }
 }
 
@@ -1286,7 +1295,7 @@ function renderInputForm(mid) {
     <select class="player-select" id="sel-first" onchange="validateSelections()">${opts("Select winner...")}</select>
     ${isTie1 ? `<div class="tie-second-row"><span class="tie-label">🤝 Also 1st:</span>
       <select class="player-select" id="sel-first-tied" onchange="validateSelections()" style="flex:1">${opts("Select tied player...")}</select>
-    </div><div class="tie-prize-note">Each gets +₹${TIE1ST} (sharing 1st+2nd prizes)</div>` : ""}
+    </div>` : ""}
   </div>`;
 
   // Card 2
@@ -1294,7 +1303,7 @@ function renderInputForm(mid) {
     ? `<div class="input-card disabled-card">
         <div class="input-card-header"><div class="position-badge pos-2">2</div>
           <div><div class="input-card-title">2nd Place</div><div class="input-card-prize">+₹${payouts[1]||0}</div></div>
-        </div><div class="disabled-reason">Disabled — prize absorbed into 1st-place tie</div>
+        </div><div class="disabled-reason">Merged into tie</div>
       </div>`
     : `<div class="input-card">
         <div class="input-card-header">
@@ -1307,7 +1316,7 @@ function renderInputForm(mid) {
         <select class="player-select" id="sel-second" onchange="validateSelections()">${opts("Select runner-up...")}</select>
         ${isTie2 ? `<div class="tie-second-row"><span class="tie-label">🤝 Also 2nd:</span>
           <select class="player-select" id="sel-second-tied" onchange="validateSelections()" style="flex:1">${opts("Select tied player...")}</select>
-        </div><div class="tie-prize-note">Each gets +₹${TIE2ND} (sharing 2nd+3rd prizes)</div>` : ""}
+        </div>` : ""}
       </div>`;
 
   // Card 3
@@ -1315,7 +1324,7 @@ function renderInputForm(mid) {
     ? `<div class="input-card disabled-card">
         <div class="input-card-header"><div class="position-badge pos-3">3</div>
           <div><div class="input-card-title">3rd Place</div><div class="input-card-prize">+₹${payouts[2]||0}</div></div>
-        </div><div class="disabled-reason">Disabled — prize absorbed into 2nd-place tie</div>
+        </div><div class="disabled-reason">Merged into tie</div>
       </div>`
     : `<div class="input-card">
         <div class="input-card-header"><div class="position-badge pos-3">3</div>
@@ -1329,7 +1338,7 @@ function renderInputForm(mid) {
     ? `<div class="input-card">
         <div class="input-card-header"><div class="position-badge pos-4">4</div>
           <div><div class="input-card-title">4th Place</div>
-            <div class="input-card-prize">${(payouts[3]||0) === 0 ? "Entry back (₹0 net)" : `Wins +₹${payouts[3]}`}</div>
+            <div class="input-card-prize">${(payouts[3]||0) === 0 ? "+₹0" : `+₹${payouts[3]}`}</div>
           </div>
         </div>
         <select class="player-select" id="sel-fourth" onchange="validateSelections()">${opts("Select 4th place...")}</select>
@@ -1465,9 +1474,10 @@ function doSwitchTab(tab) {
   document.querySelectorAll(".tab-btn, .nav-btn").forEach(b => b.classList.remove("active"));
   document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
   document.querySelectorAll(`[data-tab="${tab}"]`).forEach(b => b.classList.add("active"));
-  document.getElementById("tab-" + tab).classList.add("active");
+  const tabEl = document.getElementById("tab-" + tab);
+  tabEl.classList.add("active");
   if (tab === "settings") renderSettings();
-  window.scrollTo(0, 0); // instant — smooth was fighting user scroll on iOS
+  tabEl.scrollTop = 0; // reset scroll on the tab content, not the window
 }
 
 document.querySelectorAll(".tab-btn, .nav-btn").forEach(btn => {
@@ -1475,10 +1485,11 @@ document.querySelectorAll(".tab-btn, .nav-btn").forEach(btn => {
 });
 
 function renderAll() {
-  // Preserve scroll position — auto-refresh every 30s must not jump user back to top
-  const sx = window.scrollX, sy = window.scrollY;
+  // Preserve scroll position on the active tab (not window — body doesn't scroll on mobile)
+  const active = document.querySelector(".tab-content.active");
+  const st = active ? active.scrollTop : 0;
   renderHeaderStats(); renderLeaderboard(); renderMatchDetail(); renderInput();
-  window.scrollTo(sx, sy);
+  if (active) active.scrollTop = st;
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1583,7 +1594,7 @@ function renderSettings() {
       <div class="winner-count-row">
         ${[3,4].map(n=>`<button class="wc-btn${wc===n?" active":""}" onclick="setWinnerCount(${n})">${n} Winners</button>`).join("")}
       </div>
-      <label class="settings-label">Net Payout per Winner (after entry fee)</label>
+      <label class="settings-label">Net Payout per Winner</label>
       <div class="payout-grid" id="payout-grid">
         ${Array.from({length:wc},(_,i)=>`<div class="payout-item">
           <label>${["🥇 1st","🥈 2nd","🥉 3rd","4️⃣ 4th"][i]}</label>
@@ -1591,17 +1602,14 @@ function renderSettings() {
         </div>`).join("")}
       </div>
       <div style="margin-top:10px">
-        <span class="settings-label" style="display:inline">Loss per player (auto):</span>
+        <span class="settings-label" style="display:inline">Loss per player:</span>
         <strong id="s-loss-val" style="color:var(--accent-red);font-size:14px;margin-left:8px"></strong>
       </div>
       <div id="zero-sum-box" class="zero-sum-box" style="margin-top:10px"></div>
     </div>
 
-    <div class="settings-warning">
-      ⚠️ Saving config only affects future match submissions. All previously recorded results are permanently tied to the config that was active when they were submitted.
-    </div>
     <button class="save-cfg-btn" onclick="saveSettingsConfig()" id="save-cfg-btn">
-      💾 Save Config (future matches only)
+      Save Config
     </button>
   `;
   updateZeroSum();
@@ -1654,7 +1662,7 @@ function updateZeroSum() {
     totalWinNet += parseFloat((document.getElementById("s-pay-"+i)||{}).value||0);
   }
   const losers = n - wc;
-  const autoLoss = losers > 0 ? -(totalWinNet / losers) : 0;
+  const autoLoss = losers > 0 ? totalWinNet / losers : 0;
   const pool = n * fee;
 
   lossEl.textContent = `–₹${autoLoss.toFixed(0)}`;
@@ -1662,13 +1670,13 @@ function updateZeroSum() {
   const valid = losers > 0 && fee > 0 && Number.isFinite(autoLoss);
   if (valid) {
     boxEl.className = "zero-sum-box zero-sum-ok";
-    boxEl.textContent = `✅ Zero-sum ✓  Pool: ₹${pool} | ${wc} winners share ₹${totalWinNet} net | ${losers} losers × –₹${autoLoss.toFixed(0)}`;
+    boxEl.textContent = `✅ Balanced`;
   } else if (losers <= 0) {
     boxEl.className = "zero-sum-box zero-sum-bad";
-    boxEl.textContent = `❌ ${n} players with ${wc} winners — need at least ${wc+1} players`;
+    boxEl.textContent = `❌ Need at least ${wc+1} players`;
   } else {
     boxEl.className = "zero-sum-box zero-sum-bad";
-    boxEl.textContent = "❌ Invalid configuration";
+    boxEl.textContent = "❌ Invalid";
   }
   return { autoLoss, valid };
 }
