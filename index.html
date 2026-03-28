@@ -34,19 +34,11 @@
     --shadow-lg: 0 8px 32px rgba(120,80,40,0.12);
   }
 
-  html {
-    height: 100%;
-    overflow: hidden;
-  }
   body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     background: var(--bg-primary);
     color: var(--text-primary);
-    height: 100%;
-    overflow: hidden;
-    overscroll-behavior: none;
-    display: flex;
-    flex-direction: column;
+    min-height: 100vh;
   }
 
   /* ─── HEADER ─── */
@@ -57,7 +49,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    flex-shrink: 0;
+    position: sticky;
+    top: 0;
     z-index: 100;
     box-shadow: 0 2px 16px rgba(180,130,80,0.08);
   }
@@ -98,7 +91,6 @@
     display: flex; gap: 4px; padding: 10px 32px;
     background: var(--bg-card);
     border-bottom: 1px solid var(--border-light);
-    flex-shrink: 0;
   }
 
   .tab-btn {
@@ -119,14 +111,9 @@
   .tab-content {
     display: none; padding: 24px 32px;
     animation: fadeIn 0.3s ease;
-    flex: 1 1 auto;
-    overflow-y: auto;
-    overscroll-behavior-y: none;
-    -webkit-overflow-scrolling: touch;
-    min-height: 0;
   }
 
-  .tab-content.active { display: block; flex: 1 1 auto; min-height: 0; }
+  .tab-content.active { display: block; }
 
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(6px); }
@@ -448,7 +435,7 @@
   /* ─── BOTTOM NAV (mobile only) ─── */
   .bottom-nav {
     display: none;
-    flex-shrink: 0;
+    position: fixed; bottom: 0; left: 0; right: 0;
     background: #fff;
     border-top: 1.5px solid var(--border);
     padding: 6px 0;
@@ -469,12 +456,13 @@
 
   /* ─── MOBILE ─── */
   @media (max-width: 768px) {
-    body { height: 100svh; height: 100dvh; }
+    body { overflow-x: hidden; }
 
     /* Compact header */
     .header {
       padding: 10px 14px 8px;
       flex-wrap: wrap; gap: 6px;
+      position: sticky; top: 0;
     }
     .header-left { gap: 10px; }
     .logo { width: 34px; height: 34px; font-size: 12px; border-radius: 9px; flex-shrink: 0; }
@@ -493,15 +481,8 @@
     /* Hide top tabs on mobile — use bottom nav instead */
     .tab-bar { display: none; }
 
-    /* Tab content fills remaining flex space — scrolls internally, no rubber band */
-    .tab-content {
-      flex: 1 1 auto;
-      min-height: 0;
-      padding: 12px 12px 20px;
-      overflow-y: auto;
-      overscroll-behavior-y: none;
-    }
-    .tab-content.active { display: flex; flex-direction: column; }
+    /* Tab content with bottom nav clearance */
+    .tab-content { padding: 12px 12px 76px; }
 
     /* Prevent iOS zoom on inputs — must be >= 16px */
     input, select, textarea { font-size: 16px !important; }
@@ -558,8 +539,8 @@
     /* ── Toast above bottom nav ── */
     .toast { left: 12px; right: 12px; bottom: 72px; text-align: center; font-size: 13px; padding: 12px 16px; }
 
-    /* Show bottom nav — flex row in the flow, not fixed */
-    .bottom-nav { display: flex; flex-shrink: 0; position: relative; }
+    /* Show bottom nav */
+    .bottom-nav { display: flex; }
   }
 
   /* Extra small phones */
@@ -1477,7 +1458,7 @@ function doSwitchTab(tab) {
   const tabEl = document.getElementById("tab-" + tab);
   tabEl.classList.add("active");
   if (tab === "settings") renderSettings();
-  tabEl.scrollTop = 0; // reset scroll on the tab content, not the window
+  window.scrollTo(0, 0);
 }
 
 document.querySelectorAll(".tab-btn, .nav-btn").forEach(btn => {
@@ -1485,11 +1466,9 @@ document.querySelectorAll(".tab-btn, .nav-btn").forEach(btn => {
 });
 
 function renderAll() {
-  // Preserve scroll position on the active tab (not window — body doesn't scroll on mobile)
-  const active = document.querySelector(".tab-content.active");
-  const st = active ? active.scrollTop : 0;
+  const sy = window.scrollY;
   renderHeaderStats(); renderLeaderboard(); renderMatchDetail(); renderInput();
-  if (active) active.scrollTop = st;
+  window.scrollTo(0, sy);
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1560,18 +1539,6 @@ function renderSettings() {
   const fee = CONFIG.entryFee;
 
   form.innerHTML = `
-    <!-- PIN section -->
-    <div class="settings-section">
-      <div class="settings-section-title">🔐 Change Admin PIN</div>
-      <label class="settings-label">Current PIN</label>
-      <input type="password" id="s-cur-pin" class="settings-input" maxlength="8" placeholder="Current 8-digit PIN">
-      <label class="settings-label">New PIN</label>
-      <input type="password" id="s-new-pin" class="settings-input" maxlength="8" placeholder="New 8-digit PIN">
-      <label class="settings-label">Confirm New PIN</label>
-      <input type="password" id="s-cfm-pin" class="settings-input" maxlength="8" placeholder="Confirm new PIN">
-      <button class="save-cfg-btn secondary" onclick="savePin()">Update PIN</button>
-    </div>
-
     <!-- Players section -->
     <div class="settings-section">
       <div class="settings-section-title">👥 Players <span style="font-size:11px;color:var(--text-muted);font-weight:500;text-transform:none;letter-spacing:0">(${ps.length} active)</span></div>
@@ -1601,10 +1568,7 @@ function renderSettings() {
           <input type="number" id="s-pay-${i}" value="${pay[i]!==undefined?pay[i]:0}" oninput="updateZeroSum()">
         </div>`).join("")}
       </div>
-      <div style="margin-top:10px">
-        <span class="settings-label" style="display:inline">Loss per player:</span>
-        <strong id="s-loss-val" style="color:var(--accent-red);font-size:14px;margin-left:8px"></strong>
-      </div>
+      <div id="s-loss-val" style="display:none"></div>
       <div id="zero-sum-box" class="zero-sum-box" style="margin-top:10px"></div>
     </div>
 
