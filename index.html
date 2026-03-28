@@ -432,6 +432,10 @@
       <div class="header-stat-value" id="stat-pool">0</div>
       <div class="header-stat-label">Total Pool</div>
     </div>
+    <div class="header-stat" style="font-size:11px;color:var(--text-muted)">
+      <div id="sync-status" style="font-size:12px;font-weight:600">⟳ Loading…</div>
+      <div class="header-stat-label">Live Sync</div>
+    </div>
   </div>
 </div>
 
@@ -581,17 +585,71 @@ const MATCHES = [
 ];
 
 // ═══════════════════════════════════════════════════════
-// DATA STORE
+// GOOGLE SHEETS BACKEND
+// Paste your deployed Apps Script Web App URL below
 // ═══════════════════════════════════════════════════════
-const STORAGE_KEY = "dream11_pool_ipl2026_v1";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwx_a31J6mkbVQ3F3F3PxMy_ONSxmPXE4QmZJWLO2_B8KA6LxIiJIVpXwld92P0iucI/exec";
 
-function loadData() {
-  try { const r = localStorage.getItem(STORAGE_KEY); if (r) return JSON.parse(r); } catch(e) {}
-  return { results: {} };
+let appData = { results: {} };
+let isSyncing = false;
+
+function setLoading(on) {
+  const btn = document.getElementById("submit-btn");
+  const syncEl = document.getElementById("sync-status");
+  isSyncing = on;
+  if (btn) btn.disabled = on;
+  if (syncEl) {
+    syncEl.textContent = on ? "⟳ Syncing…" : "✓ Synced";
+    syncEl.style.color = on ? "var(--accent-orange)" : "var(--accent-green)";
+  }
 }
-function saveData(d) { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
 
-let appData = loadData();
+async function fetchFromSheets() {
+  if (APPS_SCRIPT_URL === "YOUR_APPS_SCRIPT_URL_HERE") {
+    // Fallback to localStorage if URL not configured
+    try { const r = localStorage.getItem("dream11_pool_ipl2026_v1"); if (r) appData = JSON.parse(r); } catch(e) {}
+    renderAll(); return;
+  }
+  try {
+    const res = await fetch(APPS_SCRIPT_URL);
+    const json = await res.json();
+    if (json.success) {
+      appData = { results: json.results || {} };
+      renderAll();
+    }
+  } catch(e) {
+    showToast("Could not reach database. Showing cached data.", "error");
+    try { const r = localStorage.getItem("dream11_pool_ipl2026_v1"); if (r) appData = JSON.parse(r); } catch(e2) {}
+    renderAll();
+  }
+}
+
+async function postToSheets(payload) {
+  if (APPS_SCRIPT_URL === "YOUR_APPS_SCRIPT_URL_HERE") {
+    // Fallback to localStorage
+    if (payload.action === "undo") {
+      delete appData.results[payload.matchId];
+    } else {
+      appData.results[payload.matchId] = { first: payload.first, second: payload.second, third: payload.third };
+    }
+    localStorage.setItem("dream11_pool_ipl2026_v1", JSON.stringify(appData));
+    return true;
+  }
+  setLoading(true);
+  try {
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify(payload)
+    });
+    const json = await res.json();
+    setLoading(false);
+    return json.success;
+  } catch(e) {
+    setLoading(false);
+    showToast("Error saving to database!", "error");
+    return false;
+  }
+}
 
 // ═══════════════════════════════════════════════════════
 // HELPERS
@@ -807,14 +865,16 @@ function validateSelections() {
   err.style.display="none"; btn.disabled=!(f&&s&&t);
 }
 
-function submitResult(mid) {
+async function submitResult(mid) {
   const f=document.getElementById("sel-first").value;
   const s=document.getElementById("sel-second").value;
   const t=document.getElementById("sel-third").value;
   if(!f||!s||!t) return;
 
+  const ok = await postToSheets({ action:"submit", matchId:mid, first:f, second:s, third:t });
+  if (!ok) return;
+
   appData.results[mid]={first:f,second:s,third:t};
-  saveData(appData);
   showToast(`Match ${mid} saved! ${f} takes 1st!`,"success");
   renderAll();
 
@@ -823,9 +883,11 @@ function submitResult(mid) {
   onMatchSelected();
 }
 
-function undoResult(mid) {
+async function undoResult(mid) {
   if(!confirm("Are you sure you want to undo this result?")) return;
-  delete appData.results[mid]; saveData(appData);
+  const ok = await postToSheets({ action:"undo", matchId:mid });
+  if (!ok) return;
+  delete appData.results[mid];
   showToast("Result removed","error"); renderAll();
 }
 
@@ -849,7 +911,10 @@ document.querySelectorAll(".tab-btn").forEach(btn=>{
 });
 
 function renderAll() { renderHeaderStats(); renderLeaderboard(); renderMatchDetail(); renderInput(); }
-renderAll();
+
+// Initial load from Google Sheets, then auto-refresh every 30 seconds
+fetchFromSheets();
+setInterval(fetchFromSheets, 30000);
 </script>
 </body>
 </html>
