@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dream11 Pool Tracker — IPL 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg-primary: #faf6f1;
+    --bg-secondary: #fff8f0;
+    --bg-card: #ffffff;
+    --bg-hover: #fef3e6;
+    --accent-gold: #d4880f;
+    --accent-gold-light: #f5c542;
+    --accent-green: #2d8a4e;
+    --accent-red: #c0392b;
+    --accent-blue: #2c6fbb;
+    --accent-purple: #7e57c2;
+    --accent-silver: #7f8c8d;
+    --accent-bronze: #b5651d;
+    --accent-orange: #e67e22;
+    --text-primary: #2c1810;
+    --text-secondary: #6b5344;
+    --text-muted: #a08a7a;
+    --border: #e8d8c8;
+    --border-light: #f0e4d8;
+    --shadow: 0 2px 12px rgba(120,80,40,0.08);
+    --shadow-lg: 0 8px 32px rgba(120,80,40,0.12);
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+  }
+
+  /* ─── HEADER ─── */
+  .header {
+    background: linear-gradient(135deg, #fff8f0, #ffffff);
+    border-bottom: 2px solid var(--border);
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 16px rgba(180,130,80,0.08);
+  }
+
+  .header-left { display: flex; align-items: center; gap: 14px; }
+
+  .logo {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, var(--accent-gold), var(--accent-orange));
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 900; color: #fff;
+    letter-spacing: -0.5px;
+    box-shadow: 0 3px 12px rgba(212,136,15,0.3);
+  }
+
+  .header h1 {
+    font-size: 22px; font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+  }
+
+  .header-subtitle { font-size: 12px; color: var(--text-secondary); font-weight: 500; }
+
+  .header-stats { display: flex; gap: 28px; }
+
+  .header-stat { text-align: center; }
+
+  .header-stat-value { font-size: 20px; font-weight: 800; color: var(--accent-gold); }
+
+  .header-stat-label {
+    font-size: 10px; color: var(--text-muted); text-transform: uppercase;
+    letter-spacing: 0.8px; font-weight: 600;
+  }
+
+  /* ─── TABS ─── */
+  .tab-bar {
+    display: flex; gap: 4px; padding: 10px 32px;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .tab-btn {
+    padding: 10px 22px; border: none; background: transparent;
+    color: var(--text-muted); font-family: inherit; font-size: 14px;
+    font-weight: 600; cursor: pointer; border-radius: 8px;
+    transition: all 0.2s; display: flex; align-items: center; gap: 8px;
+  }
+
+  .tab-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+  .tab-btn.active {
+    background: linear-gradient(135deg, var(--accent-gold), var(--accent-orange));
+    color: #fff;
+    box-shadow: 0 2px 10px rgba(212,136,15,0.25);
+  }
+
+  .tab-content {
+    display: none; padding: 24px 32px;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .tab-content.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── PODIUM ─── */
+  .podium {
+    display: flex; justify-content: center; align-items: flex-end;
+    gap: 18px; margin-bottom: 36px; padding: 16px 0;
+  }
+
+  .podium-card {
+    text-align: center; padding: 24px 22px 20px;
+    border-radius: 18px; background: var(--bg-card);
+    border: 2px solid var(--border-light); min-width: 170px;
+    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: var(--shadow);
+  }
+
+  .podium-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+
+  .podium-card.gold {
+    border-color: var(--accent-gold-light);
+    background: linear-gradient(180deg, #fffaf0, #fff5e0);
+    box-shadow: 0 4px 24px rgba(212,136,15,0.15);
+    order: 2; transform: translateY(-16px);
+  }
+
+  .podium-card.silver {
+    border-color: #c0c0c0;
+    background: linear-gradient(180deg, #fafafa, #f0f0f0);
+    order: 1;
+  }
+
+  .podium-card.bronze {
+    border-color: var(--accent-bronze);
+    background: linear-gradient(180deg, #fdf6ef, #f8ece0);
+    order: 3;
+  }
+
+  .podium-rank { font-size: 32px; font-weight: 900; margin-bottom: 6px; }
+
+  .podium-card.gold .podium-rank { color: var(--accent-gold); }
+  .podium-card.silver .podium-rank { color: var(--accent-silver); }
+  .podium-card.bronze .podium-rank { color: var(--accent-bronze); }
+
+  .podium-avatar {
+    width: 54px; height: 54px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 800; margin: 0 auto 10px; color: #fff;
+  }
+
+  .podium-name { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+  .podium-amount { font-size: 22px; font-weight: 800; margin-top: 2px; }
+  .podium-matches { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+  /* ─── LEADERBOARD TABLE ─── */
+  .lb-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; }
+
+  .lb-table th {
+    padding: 10px 16px; text-align: left; font-size: 10px;
+    text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted);
+    font-weight: 700; border-bottom: 1px solid var(--border-light);
+  }
+
+  .lb-table td {
+    padding: 14px 16px; font-size: 14px; background: var(--bg-card);
+    font-weight: 500; border-top: 1px solid var(--border-light);
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .lb-table tr td:first-child { border-left: 1px solid var(--border-light); border-radius: 10px 0 0 10px; }
+  .lb-table tr td:last-child { border-right: 1px solid var(--border-light); border-radius: 0 10px 10px 0; }
+  .lb-table tr:hover td { background: var(--bg-hover); }
+
+  .lb-rank { font-weight: 800; width: 40px; text-align: center; font-size: 15px; }
+
+  .lb-name-cell { display: flex; align-items: center; gap: 12px; }
+
+  .lb-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px; color: #fff; flex-shrink: 0;
+  }
+
+  .lb-name { font-weight: 600; }
+
+  .amount-positive { color: var(--accent-green); font-weight: 700; }
+  .amount-negative { color: var(--accent-red); font-weight: 700; }
+  .amount-zero { color: var(--text-muted); font-weight: 600; }
+
+  .trend-up { color: var(--accent-green); font-size: 12px; }
+  .trend-down { color: var(--accent-red); font-size: 12px; }
+  .trend-flat { color: var(--text-muted); font-size: 12px; }
+
+  /* ─── MATCH DETAIL TABLE ─── */
+  .match-detail-container {
+    overflow-x: auto; border-radius: 14px;
+    border: 1px solid var(--border); background: var(--bg-card);
+    box-shadow: var(--shadow);
+  }
+
+  .md-table { width: 100%; border-collapse: collapse; min-width: 900px; font-size: 13px; }
+
+  .md-table th {
+    padding: 12px 10px; background: #fef6eb; font-size: 10px;
+    text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-secondary);
+    font-weight: 700; border-bottom: 2px solid var(--border);
+    white-space: nowrap; text-align: center;
+  }
+
+  .md-table th:first-child, .md-table th:nth-child(2), .md-table th:nth-child(3) {
+    text-align: left; position: sticky; z-index: 11; background: #fef6eb;
+  }
+
+  .md-table th:first-child { left: 0; min-width: 40px; }
+  .md-table th:nth-child(2) { left: 40px; min-width: 140px; }
+  .md-table th:nth-child(3) { left: 180px; min-width: 90px; }
+
+  .md-table td {
+    padding: 10px 10px; border-bottom: 1px solid var(--border-light);
+    text-align: center; font-weight: 500;
+  }
+
+  .md-table td:first-child, .md-table td:nth-child(2), .md-table td:nth-child(3) {
+    text-align: left; position: sticky; background: var(--bg-card); z-index: 5;
+  }
+
+  .md-table td:first-child { left: 0; min-width: 40px; font-weight: 700; color: var(--text-muted); }
+  .md-table td:nth-child(2) { left: 40px; min-width: 140px; font-weight: 600; }
+  .md-table td:nth-child(3) { left: 180px; min-width: 90px; font-size: 12px; color: var(--text-muted); }
+
+  .md-table tr:hover td { background: var(--bg-hover); }
+  .md-table tr:hover td:first-child, .md-table tr:hover td:nth-child(2), .md-table tr:hover td:nth-child(3) { background: var(--bg-hover); }
+
+  .md-table tr.running-total td {
+    background: #fef6eb !important; font-weight: 700;
+    border-bottom: 2px solid var(--accent-gold); border-top: 2px solid var(--accent-gold);
+  }
+
+  .md-cell-first { color: var(--accent-gold); font-weight: 700; }
+  .md-cell-second { color: var(--accent-silver); font-weight: 700; }
+  .md-cell-third { color: var(--accent-bronze); font-weight: 700; }
+  .md-cell-loss { color: var(--accent-red); opacity: 0.6; }
+  .md-cell-pending { color: var(--text-muted); font-style: italic; opacity: 0.5; }
+
+  .match-status-completed {
+    display: inline-block; width: 8px; height: 8px;
+    border-radius: 50%; background: var(--accent-green); margin-right: 6px;
+  }
+
+  .match-status-upcoming {
+    display: inline-block; width: 8px; height: 8px;
+    border-radius: 50%; background: var(--border); margin-right: 6px;
+  }
+
+  .match-status-today {
+    display: inline-block; width: 8px; height: 8px;
+    border-radius: 50%; background: var(--accent-orange); margin-right: 6px;
+    animation: pulse 1.5s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(230,126,34,0.4); }
+    50% { opacity: 0.7; box-shadow: 0 0 0 6px rgba(230,126,34,0); }
+  }
+
+  /* ─── TAB 3: INPUT ─── */
+  .input-section { max-width: 680px; margin: 0 auto; }
+
+  .today-match-card {
+    background: linear-gradient(135deg, #fff8f0, #fef3e2);
+    border: 2px solid var(--accent-gold-light);
+    border-radius: 18px; padding: 28px; margin-bottom: 24px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(212,136,15,0.1);
+  }
+
+  .today-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--accent-gold); font-weight: 700; margin-bottom: 8px;
+  }
+
+  .today-match-teams { font-size: 26px; font-weight: 900; color: var(--text-primary); margin-bottom: 4px; }
+  .today-match-date { font-size: 13px; color: var(--text-secondary); }
+  .today-match-number { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+  .match-selector { margin-bottom: 24px; }
+
+  .match-selector label {
+    display: block; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.8px; color: var(--text-secondary);
+    font-weight: 700; margin-bottom: 8px;
+  }
+
+  .match-selector select, .player-select {
+    width: 100%; padding: 13px 16px; background: var(--bg-card);
+    border: 1.5px solid var(--border); color: var(--text-primary);
+    font-family: inherit; font-size: 14px; border-radius: 10px;
+    cursor: pointer; appearance: none; transition: border-color 0.2s;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b5344' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 16px center;
+  }
+
+  .match-selector select:focus, .player-select:focus {
+    outline: none; border-color: var(--accent-gold);
+    box-shadow: 0 0 0 3px rgba(212,136,15,0.1);
+  }
+
+  .input-card {
+    background: var(--bg-card); border-radius: 14px;
+    padding: 22px; margin-bottom: 14px;
+    border: 1.5px solid var(--border-light);
+    transition: border-color 0.2s; box-shadow: var(--shadow);
+  }
+
+  .input-card:focus-within { border-color: var(--accent-gold); }
+
+  .input-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+
+  .position-badge {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 18px; color: #fff;
+  }
+
+  .position-badge.pos-1 { background: linear-gradient(135deg, var(--accent-gold), var(--accent-orange)); }
+  .position-badge.pos-2 { background: linear-gradient(135deg, #95a5a6, #7f8c8d); }
+  .position-badge.pos-3 { background: linear-gradient(135deg, var(--accent-bronze), #a0522d); }
+
+  .input-card-title { font-weight: 700; font-size: 15px; }
+  .input-card-prize { font-size: 13px; color: var(--accent-green); font-weight: 600; }
+
+  .submit-btn {
+    width: 100%; padding: 15px;
+    background: linear-gradient(135deg, var(--accent-gold), var(--accent-orange));
+    color: #fff; border: none; border-radius: 12px; font-family: inherit;
+    font-size: 15px; font-weight: 800; cursor: pointer;
+    transition: all 0.2s; margin-top: 8px;
+    text-transform: uppercase; letter-spacing: 1px;
+    box-shadow: 0 4px 16px rgba(212,136,15,0.25);
+  }
+
+  .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(212,136,15,0.35); }
+  .submit-btn:active { transform: translateY(0); }
+  .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .undo-btn {
+    width: 100%; padding: 11px; background: transparent;
+    color: var(--accent-red); border: 1.5px solid var(--accent-red);
+    border-radius: 10px; font-family: inherit; font-size: 13px;
+    font-weight: 600; cursor: pointer; margin-top: 12px; transition: all 0.2s;
+  }
+
+  .undo-btn:hover { background: rgba(192,57,43,0.06); }
+
+  .validation-error { color: var(--accent-red); font-size: 13px; font-weight: 500; margin-top: 8px; display: none; }
+
+  .already-submitted {
+    background: var(--bg-card); border: 1.5px solid var(--accent-green);
+    border-radius: 14px; padding: 24px; text-align: center;
+    box-shadow: var(--shadow);
+  }
+
+  .already-submitted h3 { color: var(--accent-green); margin-bottom: 8px; }
+
+  /* ─── TOAST ─── */
+  .toast {
+    position: fixed; bottom: 30px; right: 30px; padding: 14px 24px;
+    border-radius: 12px; font-weight: 600; font-size: 14px; z-index: 1000;
+    transform: translateY(100px); opacity: 0; transition: all 0.3s ease;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  }
+
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast-success { background: var(--accent-green); color: #fff; }
+  .toast-error { background: var(--accent-red); color: #fff; }
+
+  /* ─── EMPTY STATE ─── */
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+  .empty-state-icon { font-size: 48px; margin-bottom: 16px; }
+  .empty-state h3 { font-size: 18px; color: var(--text-secondary); margin-bottom: 8px; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    .header { padding: 14px 16px; flex-direction: column; gap: 12px; }
+    .tab-bar { padding: 8px 16px; overflow-x: auto; }
+    .tab-content { padding: 16px; }
+    .podium { flex-direction: column; align-items: center; }
+    .podium-card { order: unset !important; transform: none !important; min-width: 90%; }
+    .today-match-teams { font-size: 20px; }
+    .header-stats { gap: 20px; }
+    .leaderboard-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo">D11</div>
+    <div>
+      <h1>Dream11 Pool Tracker</h1>
+      <div class="header-subtitle">IPL 2026 Season</div>
+    </div>
+  </div>
+  <div class="header-stats">
+    <div class="header-stat">
+      <div class="header-stat-value" id="stat-completed">0</div>
+      <div class="header-stat-label">Matches Done</div>
+    </div>
+    <div class="header-stat">
+      <div class="header-stat-value" id="stat-remaining">0</div>
+      <div class="header-stat-label">Remaining</div>
+    </div>
+    <div class="header-stat">
+      <div class="header-stat-value" id="stat-pool">0</div>
+      <div class="header-stat-label">Total Pool</div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" data-tab="leaderboard"><span class="tab-icon">&#127942;</span> Leaderboard</button>
+  <button class="tab-btn" data-tab="details"><span class="tab-icon">&#128202;</span> Match Details</button>
+  <button class="tab-btn" data-tab="input"><span class="tab-icon">&#9998;</span> Submit Results</button>
+</div>
+
+<div class="tab-content active" id="tab-leaderboard">
+  <div class="podium" id="podium-container"></div>
+  <table class="lb-table">
+    <thead>
+      <tr>
+        <th style="text-align:center">#</th>
+        <th>Player</th>
+        <th style="text-align:right">Total</th>
+        <th style="text-align:center">Played</th>
+        <th style="text-align:center">1st</th>
+        <th style="text-align:center">2nd</th>
+        <th style="text-align:center">3rd</th>
+        <th style="text-align:center">Win %</th>
+        <th style="text-align:right">Last 5</th>
+      </tr>
+    </thead>
+    <tbody id="lb-body"></tbody>
+  </table>
+</div>
+
+<div class="tab-content" id="tab-details">
+  <div class="match-detail-container">
+    <table class="md-table">
+      <thead id="md-head"></thead>
+      <tbody id="md-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="tab-content" id="tab-input">
+  <div class="input-section">
+    <div class="today-match-card" id="today-card">
+      <div class="today-label" id="today-label">Today's Match</div>
+      <div class="today-match-teams" id="today-teams">—</div>
+      <div class="today-match-date" id="today-date"></div>
+      <div class="today-match-number" id="today-number"></div>
+    </div>
+    <div class="match-selector">
+      <label>Select Match</label>
+      <select id="match-select" onchange="onMatchSelected()"></select>
+    </div>
+    <div id="input-form-area"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// CONFIGURATION
+// ═══════════════════════════════════════════════════════
+const CONFIG = {
+  participants: [
+    "Player 1","Player 2","Player 3","Player 4",
+    "Player 5","Player 6","Player 7","Player 8",
+    "Player 9","Player 10","Player 11","Player 12"
+  ],
+  entryFee: 100,
+  payouts: { 1: +500, 2: +300, 3: +100 },
+  lossPayout: -100,
+  seasonName: "IPL 2026"
+};
+
+// ═══════════════════════════════════════════════════════
+// IPL 2026 MATCH SCHEDULE (Official BCCI)
+// ═══════════════════════════════════════════════════════
+const MATCHES = [
+  { id:1,  date:"2026-03-28", teams:"RCB vs SRH" },
+  { id:2,  date:"2026-03-29", teams:"MI vs KKR" },
+  { id:3,  date:"2026-03-30", teams:"RR vs CSK" },
+  { id:4,  date:"2026-03-31", teams:"PBKS vs GT" },
+  { id:5,  date:"2026-04-01", teams:"LSG vs DC" },
+  { id:6,  date:"2026-04-02", teams:"KKR vs SRH" },
+  { id:7,  date:"2026-04-03", teams:"CSK vs PBKS" },
+  { id:8,  date:"2026-04-04", teams:"DC vs MI" },
+  { id:9,  date:"2026-04-04", teams:"GT vs RR" },
+  { id:10, date:"2026-04-05", teams:"SRH vs LSG" },
+  { id:11, date:"2026-04-05", teams:"RCB vs CSK" },
+  { id:12, date:"2026-04-06", teams:"KKR vs PBKS" },
+  { id:13, date:"2026-04-07", teams:"RR vs MI" },
+  { id:14, date:"2026-04-08", teams:"DC vs GT" },
+  { id:15, date:"2026-04-09", teams:"KKR vs LSG" },
+  { id:16, date:"2026-04-10", teams:"RR vs RCB" },
+  { id:17, date:"2026-04-11", teams:"PBKS vs SRH" },
+  { id:18, date:"2026-04-11", teams:"CSK vs DC" },
+  { id:19, date:"2026-04-12", teams:"LSG vs GT" },
+  { id:20, date:"2026-04-12", teams:"MI vs RCB" },
+  { id:21, date:"2026-04-13", teams:"SRH vs RR" },
+  { id:22, date:"2026-04-14", teams:"CSK vs KKR" },
+  { id:23, date:"2026-04-15", teams:"RCB vs LSG" },
+  { id:24, date:"2026-04-16", teams:"MI vs PBKS" },
+  { id:25, date:"2026-04-17", teams:"GT vs KKR" },
+  { id:26, date:"2026-04-18", teams:"RCB vs DC" },
+  { id:27, date:"2026-04-18", teams:"SRH vs CSK" },
+  { id:28, date:"2026-04-19", teams:"KKR vs RR" },
+  { id:29, date:"2026-04-19", teams:"PBKS vs LSG" },
+  { id:30, date:"2026-04-20", teams:"GT vs MI" },
+  { id:31, date:"2026-04-21", teams:"SRH vs DC" },
+  { id:32, date:"2026-04-22", teams:"LSG vs RR" },
+  { id:33, date:"2026-04-23", teams:"MI vs CSK" },
+  { id:34, date:"2026-04-24", teams:"RCB vs GT" },
+  { id:35, date:"2026-04-25", teams:"DC vs PBKS" },
+  { id:36, date:"2026-04-25", teams:"RR vs SRH" },
+  { id:37, date:"2026-04-26", teams:"GT vs CSK" },
+  { id:38, date:"2026-04-26", teams:"LSG vs KKR" },
+  { id:39, date:"2026-04-27", teams:"DC vs RCB" },
+  { id:40, date:"2026-04-28", teams:"PBKS vs RR" },
+  { id:41, date:"2026-04-29", teams:"MI vs SRH" },
+  { id:42, date:"2026-04-30", teams:"GT vs RCB" },
+  { id:43, date:"2026-05-01", teams:"RR vs DC" },
+  { id:44, date:"2026-05-02", teams:"CSK vs MI" },
+  { id:45, date:"2026-05-03", teams:"SRH vs KKR" },
+  { id:46, date:"2026-05-03", teams:"GT vs PBKS" },
+  { id:47, date:"2026-05-04", teams:"MI vs LSG" },
+  { id:48, date:"2026-05-05", teams:"DC vs CSK" },
+  { id:49, date:"2026-05-06", teams:"SRH vs PBKS" },
+  { id:50, date:"2026-05-07", teams:"LSG vs RCB" },
+  { id:51, date:"2026-05-08", teams:"DC vs KKR" },
+  { id:52, date:"2026-05-09", teams:"RR vs GT" },
+  { id:53, date:"2026-05-10", teams:"CSK vs LSG" },
+  { id:54, date:"2026-05-10", teams:"RCB vs MI" },
+  { id:55, date:"2026-05-11", teams:"PBKS vs DC" },
+  { id:56, date:"2026-05-12", teams:"GT vs SRH" },
+  { id:57, date:"2026-05-13", teams:"RCB vs KKR" },
+  { id:58, date:"2026-05-14", teams:"PBKS vs MI" },
+  { id:59, date:"2026-05-15", teams:"LSG vs CSK" },
+  { id:60, date:"2026-05-16", teams:"KKR vs GT" },
+  { id:61, date:"2026-05-17", teams:"PBKS vs RCB" },
+  { id:62, date:"2026-05-17", teams:"DC vs RR" },
+  { id:63, date:"2026-05-18", teams:"CSK vs SRH" },
+  { id:64, date:"2026-05-19", teams:"RR vs LSG" },
+  { id:65, date:"2026-05-20", teams:"KKR vs MI" },
+  { id:66, date:"2026-05-21", teams:"CSK vs GT" },
+  { id:67, date:"2026-05-22", teams:"SRH vs RCB" },
+  { id:68, date:"2026-05-23", teams:"LSG vs PBKS" },
+  { id:69, date:"2026-05-24", teams:"MI vs RR" },
+  { id:70, date:"2026-05-24", teams:"KKR vs DC" },
+];
+
+// ═══════════════════════════════════════════════════════
+// DATA STORE
+// ═══════════════════════════════════════════════════════
+const STORAGE_KEY = "dream11_pool_ipl2026_v1";
+
+function loadData() {
+  try { const r = localStorage.getItem(STORAGE_KEY); if (r) return JSON.parse(r); } catch(e) {}
+  return { results: {} };
+}
+function saveData(d) { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
+
+let appData = loadData();
+
+// ═══════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════
+const COLORS = [
+  "#d4880f","#2c6fbb","#2d8a4e","#c0392b","#7e57c2",
+  "#0097a7","#e67e22","#c2185b","#689f38","#5c6bc0",
+  "#00897b","#e53935"
+];
+
+function getColor(i) { return COLORS[i % COLORS.length]; }
+function getInitials(n) { return n.split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2); }
+function formatDate(ds) {
+  const d = new Date(ds+"T00:00:00");
+  return d.toLocaleDateString("en-IN",{day:"numeric",month:"short"});
+}
+function formatDateFull(ds) {
+  const d = new Date(ds+"T00:00:00");
+  return d.toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric",weekday:"short"});
+}
+function isToday(ds) { return new Date(ds+"T00:00:00").toDateString() === new Date().toDateString(); }
+function isPast(ds) { const t=new Date();t.setHours(0,0,0,0); return new Date(ds+"T00:00:00")<t; }
+function amountClass(v) { return v>0?"amount-positive":v<0?"amount-negative":"amount-zero"; }
+function formatAmount(v) { return v>0?`+₹${v}`:v<0?`-₹${Math.abs(v)}`:"₹0"; }
+
+function showToast(msg,type="success") {
+  const t=document.getElementById("toast");
+  t.textContent=msg; t.className="toast toast-"+type+" show";
+  setTimeout(()=>t.classList.remove("show"),3000);
+}
+
+// ═══════════════════════════════════════════════════════
+// CALCULATIONS
+// ═══════════════════════════════════════════════════════
+function getPlayerStats() {
+  const s={};
+  CONFIG.participants.forEach(p=>{ s[p]={total:0,matches:0,first:0,second:0,third:0,last5:[]}; });
+  MATCHES.forEach(m=>{
+    const r=appData.results[m.id]; if(!r) return;
+    CONFIG.participants.forEach(p=>{
+      let pay=CONFIG.lossPayout;
+      if(r.first===p){pay=CONFIG.payouts[1];s[p].first++;}
+      else if(r.second===p){pay=CONFIG.payouts[2];s[p].second++;}
+      else if(r.third===p){pay=CONFIG.payouts[3];s[p].third++;}
+      s[p].total+=pay; s[p].matches++;
+      s[p].last5.push(pay); if(s[p].last5.length>5) s[p].last5.shift();
+    });
+  });
+  return s;
+}
+
+function getCompletedCount() { return Object.keys(appData.results).length; }
+
+// ═══════════════════════════════════════════════════════
+// TAB 1: LEADERBOARD
+// ═══════════════════════════════════════════════════════
+function renderLeaderboard() {
+  const stats=getPlayerStats();
+  const sorted=CONFIG.participants.slice().sort((a,b)=>stats[b].total-stats[a].total);
+  const podEl=document.getElementById("podium-container");
+  const completed=getCompletedCount();
+
+  if(completed===0){
+    podEl.innerHTML=`<div class="empty-state"><div class="empty-state-icon">&#127942;</div><h3>No matches completed yet</h3><p>Submit results in the Submit Results tab to see the leaderboard</p></div>`;
+  } else {
+    const cls=["gold","silver","bronze"], lbl=["1st","2nd","3rd"];
+    podEl.innerHTML=sorted.slice(0,3).map((name,i)=>{
+      const s=stats[name], pi=CONFIG.participants.indexOf(name);
+      return `<div class="podium-card ${cls[i]}">
+        <div class="podium-rank">${lbl[i]}</div>
+        <div class="podium-avatar" style="background:${getColor(pi)}">${getInitials(name)}</div>
+        <div class="podium-name">${name}</div>
+        <div class="podium-amount ${amountClass(s.total)}">${formatAmount(s.total)}</div>
+        <div class="podium-matches">${s.matches} matches played</div>
+      </div>`;
+    }).join("");
+  }
+
+  document.getElementById("lb-body").innerHTML=sorted.map((name,i)=>{
+    const s=stats[name], pi=CONFIG.participants.indexOf(name);
+    const wr=s.matches?Math.round(((s.first+s.second+s.third)/s.matches)*100):0;
+    const l5=s.last5.reduce((a,b)=>a+b,0);
+    const l5c=l5>0?"trend-up":l5<0?"trend-down":"trend-flat";
+    const l5a=l5>0?"&#9650;":l5<0?"&#9660;":"&#9644;";
+    const rc=i<3?[COLORS[0],"#7f8c8d","#b5651d"][i]:"var(--text-muted)";
+    return `<tr>
+      <td class="lb-rank" style="color:${rc}">${i+1}</td>
+      <td><div class="lb-name-cell"><div class="lb-avatar" style="background:${getColor(pi)}">${getInitials(name)}</div><span class="lb-name">${name}</span></div></td>
+      <td style="text-align:right" class="${amountClass(s.total)}"><strong>${formatAmount(s.total)}</strong></td>
+      <td style="text-align:center">${s.matches}</td>
+      <td style="text-align:center;color:var(--accent-gold);font-weight:600">${s.first}</td>
+      <td style="text-align:center;color:var(--accent-silver);font-weight:600">${s.second}</td>
+      <td style="text-align:center;color:var(--accent-bronze);font-weight:600">${s.third}</td>
+      <td style="text-align:center">${wr}%</td>
+      <td style="text-align:right" class="${l5c}">${l5a} ${formatAmount(l5)}</td>
+    </tr>`;
+  }).join("");
+}
+
+// ═══════════════════════════════════════════════════════
+// TAB 2: MATCH DETAILS
+// ═══════════════════════════════════════════════════════
+function renderMatchDetail() {
+  const players=CONFIG.participants;
+  document.getElementById("md-head").innerHTML=`<tr><th>#</th><th>Match</th><th>Date</th>${players.map(p=>`<th>${p}</th>`).join("")}</tr>`;
+
+  const rt={}; players.forEach(p=>rt[p]=0);
+  let rows="";
+
+  MATCHES.forEach((m,idx)=>{
+    const r=appData.results[m.id], done=!!r, today=isToday(m.date);
+    let dot=done?'<span class="match-status-completed"></span>':today?'<span class="match-status-today"></span>':'<span class="match-status-upcoming"></span>';
+    let cells="";
+    if(done){
+      players.forEach(p=>{
+        let pay,cls;
+        if(r.first===p){pay=CONFIG.payouts[1];cls="md-cell-first";}
+        else if(r.second===p){pay=CONFIG.payouts[2];cls="md-cell-second";}
+        else if(r.third===p){pay=CONFIG.payouts[3];cls="md-cell-third";}
+        else{pay=CONFIG.lossPayout;cls="md-cell-loss";}
+        rt[p]+=pay;
+        cells+=`<td class="${cls}">${formatAmount(pay)}</td>`;
+      });
+    } else {
+      players.forEach(()=>{ cells+=`<td class="md-cell-pending">—</td>`; });
+    }
+
+    rows+=`<tr${today?' style="background:rgba(212,136,15,0.06)"':""}>
+      <td>${m.id}</td><td>${dot}${m.teams}</td><td>${formatDate(m.date)}</td>${cells}</tr>`;
+
+    const nm=MATCHES[idx+1];
+    const isLast=done&&(!nm||!appData.results[nm.id]);
+    if(done&&(m.id%10===0||isLast)){
+      rows+=`<tr class="running-total"><td></td><td colspan="2" style="font-weight:700;color:var(--accent-gold)">Running Total (Match ${m.id})</td>${players.map(p=>`<td class="${amountClass(rt[p])}">${formatAmount(rt[p])}</td>`).join("")}</tr>`;
+    }
+  });
+
+  document.getElementById("md-body").innerHTML=rows;
+}
+
+// ═══════════════════════════════════════════════════════
+// TAB 3: INPUT
+// ═══════════════════════════════════════════════════════
+function renderInput() {
+  const sel=document.getElementById("match-select");
+  let todayId=null, firstInc=null;
+  sel.innerHTML=MATCHES.map(m=>{
+    const done=!!appData.results[m.id], today=isToday(m.date);
+    if(today&&!todayId) todayId=m.id;
+    if(!done&&!firstInc) firstInc=m.id;
+    return `<option value="${m.id}">Match ${m.id}: ${m.teams} (${formatDateFull(m.date)})${done?" ✓":""}${today?" ← TODAY":""}</option>`;
+  }).join("");
+
+  sel.value=todayId||firstInc||(MATCHES.length?MATCHES[0].id:null);
+  updateTodayCard(); onMatchSelected();
+}
+
+function updateTodayCard() {
+  const tm=MATCHES.find(m=>isToday(m.date));
+  const lEl=document.getElementById("today-label"), tEl=document.getElementById("today-teams");
+  const dEl=document.getElementById("today-date"), nEl=document.getElementById("today-number");
+  if(tm){
+    lEl.textContent=appData.results[tm.id]?"Today's Match (Completed)":"Today's Match";
+    tEl.textContent=tm.teams; dEl.textContent=formatDateFull(tm.date);
+    nEl.textContent=`Match ${tm.id} of ${MATCHES.length}`;
+  } else {
+    const nm=MATCHES.find(m=>!isPast(m.date)&&!isToday(m.date));
+    if(nm){ lEl.textContent="Next Match"; tEl.textContent=nm.teams; dEl.textContent=formatDateFull(nm.date); nEl.textContent=`Match ${nm.id} of ${MATCHES.length}`; }
+    else { lEl.textContent="Season"; tEl.textContent="All Matches Completed"; dEl.textContent=""; nEl.textContent=""; }
+  }
+}
+
+function onMatchSelected() {
+  const mid=parseInt(document.getElementById("match-select").value);
+  const match=MATCHES.find(m=>m.id===mid); if(!match) return;
+  const area=document.getElementById("input-form-area");
+  const r=appData.results[mid];
+
+  if(r){
+    area.innerHTML=`<div class="already-submitted"><h3>Results Submitted</h3><p style="margin-bottom:16px;color:var(--text-secondary)">
+      <strong style="color:var(--accent-gold)">1st:</strong> ${r.first} (+₹${CONFIG.payouts[1]}) &nbsp;
+      <strong style="color:var(--accent-silver)">2nd:</strong> ${r.second} (+₹${CONFIG.payouts[2]}) &nbsp;
+      <strong style="color:var(--accent-bronze)">3rd:</strong> ${r.third} (+₹${CONFIG.payouts[3]})
+    </p><button class="undo-btn" onclick="undoResult(${mid})">Undo This Result</button></div>`;
+    return;
+  }
+
+  const ps=CONFIG.participants;
+  const opts=ps.map(p=>`<option value="${p}">${p}</option>`).join("");
+  area.innerHTML=`
+    ${[{pos:1,label:"1st Place",prize:CONFIG.payouts[1],placeholder:"Select winner..."},{pos:2,label:"2nd Place",prize:CONFIG.payouts[2],placeholder:"Select runner-up..."},{pos:3,label:"3rd Place",prize:CONFIG.payouts[3],placeholder:"Select 3rd place..."}].map(x=>`
+    <div class="input-card"><div class="input-card-header">
+      <div class="position-badge pos-${x.pos}">${x.pos}</div>
+      <div><div class="input-card-title">${x.label}</div><div class="input-card-prize">Wins +₹${x.prize}</div></div>
+    </div>
+    <select class="player-select" id="sel-${["","first","second","third"][x.pos]}" onchange="validateSelections()">
+      <option value="">${x.placeholder}</option>${opts}
+    </select></div>`).join("")}
+    <div class="validation-error" id="val-error"></div>
+    <button class="submit-btn" id="submit-btn" onclick="submitResult(${mid})" disabled>Submit Results</button>`;
+}
+
+function validateSelections() {
+  const f=document.getElementById("sel-first").value;
+  const s=document.getElementById("sel-second").value;
+  const t=document.getElementById("sel-third").value;
+  const btn=document.getElementById("submit-btn");
+  const err=document.getElementById("val-error");
+  const sel=[f,s,t].filter(v=>v);
+  if(new Set(sel).size!==sel.length){
+    err.textContent="Each player can only be selected once!"; err.style.display="block"; btn.disabled=true; return;
+  }
+  err.style.display="none"; btn.disabled=!(f&&s&&t);
+}
+
+function submitResult(mid) {
+  const f=document.getElementById("sel-first").value;
+  const s=document.getElementById("sel-second").value;
+  const t=document.getElementById("sel-third").value;
+  if(!f||!s||!t) return;
+
+  appData.results[mid]={first:f,second:s,third:t};
+  saveData(appData);
+  showToast(`Match ${mid} saved! ${f} takes 1st!`,"success");
+  renderAll();
+
+  const ni=MATCHES.find(m=>m.id>mid&&!appData.results[m.id]);
+  if(ni) document.getElementById("match-select").value=ni.id;
+  onMatchSelected();
+}
+
+function undoResult(mid) {
+  if(!confirm("Are you sure you want to undo this result?")) return;
+  delete appData.results[mid]; saveData(appData);
+  showToast("Result removed","error"); renderAll();
+}
+
+// ═══════════════════════════════════════════════════════
+// HEADER + TABS
+// ═══════════════════════════════════════════════════════
+function renderHeaderStats() {
+  const c=getCompletedCount();
+  document.getElementById("stat-completed").textContent=c;
+  document.getElementById("stat-remaining").textContent=MATCHES.length-c;
+  document.getElementById("stat-pool").textContent=`₹${(c*CONFIG.participants.length*CONFIG.entryFee).toLocaleString("en-IN")}`;
+}
+
+document.querySelectorAll(".tab-btn").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+    document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("tab-"+btn.dataset.tab).classList.add("active");
+  });
+});
+
+function renderAll() { renderHeaderStats(); renderLeaderboard(); renderMatchDetail(); renderInput(); }
+renderAll();
+</script>
+</body>
+</html>
