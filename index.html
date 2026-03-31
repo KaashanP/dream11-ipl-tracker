@@ -34,11 +34,20 @@
     --shadow-lg: 0 8px 32px rgba(120,80,40,0.12);
   }
 
+  html {
+    height: 100%;
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+  }
   body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     background: var(--bg-primary);
     color: var(--text-primary);
-    min-height: 100vh;
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+    position: relative;
   }
 
   /* ─── HEADER ─── */
@@ -1696,26 +1705,17 @@ async function saveSettingsConfig() {
 fetchFromSheets();
 setInterval(fetchFromSheets, 30000);
 
-// Prevent iOS rubber-band overscroll
-let startY = 0;
-document.addEventListener('touchstart', (e) => {
-  startY = e.touches[0].pageY;
-}, { passive: true });
-
-document.addEventListener('touchmove', (e) => {
-  const scrollY = window.scrollY || window.pageYOffset;
-  const currentY = e.touches[0].pageY;
-  const isAtTop = scrollY <= 0;
-  const isAtBottom = (scrollY + window.innerHeight) >= document.documentElement.scrollHeight;
-
-  // Prevent pull-down when at top
-  if (isAtTop && currentY > startY) {
-    e.preventDefault();
+// Prevent rubber-band overscroll - disable body scroll completely
+document.body.addEventListener('touchmove', (e) => {
+  // Allow scrolling only within scrollable elements
+  let el = e.target;
+  while (el && el !== document.body) {
+    if (el.classList && el.classList.contains('tab-content')) {
+      return; // Allow scroll in tab content
+    }
+    el = el.parentElement;
   }
-  // Prevent pull-up when at bottom
-  if (isAtBottom && currentY < startY) {
-    e.preventDefault();
-  }
+  e.preventDefault(); // Prevent body scroll
 }, { passive: false });
 </script>
 </body>
