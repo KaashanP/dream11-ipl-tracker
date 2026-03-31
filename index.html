@@ -822,19 +822,19 @@ let CONFIG = {
   participants: [
     "Player 1","Player 2","Player 3","Player 4",
     "Player 5","Player 6","Player 7","Player 8",
-    "Player 9","Player 10","Player 11","Player 12"
+    "Player 9","Player 10","Player 11","Player 12","Player 13"
   ],
   entryFee: 100,
-  payouts: [500, 300, 100],   // array: index 0=1st, 1=2nd, 2=3rd, 3=4th (optional)
-  winnerCount: 3,
+  payouts: [500, 300, 100, 0],   // 13×100=1300 pool, 4 winners share 900 net
+  winnerCount: 4,
   lossPayout: -100,
   seasonName: "IPL 2026"
 };
 
 // Auth & PIN state
 let serverPin = "12345678";       // loaded from Google Sheets
-let sessionAuthenticated = false; // unlocked for current browser session
-let pinCallback = null;
+let pinResolve = null;  // Promise resolve for PIN modal
+let pinReject = null;   // Promise reject for PIN cancel
 let pinEntry = "";
 
 // ═══════════════════════════════════════════════════════
@@ -1370,11 +1370,8 @@ function validateSelections() {
 async function submitResult(mid) {
   const f = (document.getElementById("sel-first")||{}).value || "";
   if (!f) return;
-  // Require PIN before submitting
-  if (!sessionAuthenticated) {
-    showPinModal(() => submitResult(mid));
-    return;
-  }
+  // Always require PIN before submitting
+  try { await requestPin(); } catch { return; }
   const wc = CONFIG.winnerCount || 3;
 
   // Snapshot of current config — locked forever with this result
@@ -1421,7 +1418,6 @@ async function submitResult(mid) {
     showToast(`Match ${mid} saved! ${f} takes 1st!`, "success");
   }
 
-  sessionAuthenticated = false; // always require PIN again for next submit
   renderAll();
   const ni = MATCHES.find(m => m.id > mid && !appData.results[m.id]);
   if (ni) document.getElementById("match-select").value = ni.id;
@@ -1474,20 +1470,22 @@ function renderAll() {
 // ═══════════════════════════════════════════════════════
 // PIN AUTHENTICATION
 // ═══════════════════════════════════════════════════════
-// unlockTab removed — tabs are freely accessible; PIN gate is on actions
 
-function showPinModal(callback) {
-  pinCallback = callback;
-  pinEntry = "";
-  updatePinDots();
-  document.getElementById("pin-error").textContent = "";
-  document.getElementById("pin-overlay").style.display = "flex";
+// Returns a Promise that resolves on correct PIN, rejects on cancel
+function requestPin() {
+  return new Promise((resolve, reject) => {
+    pinResolve = resolve;
+    pinReject = reject;
+    pinEntry = "";
+    updatePinDots();
+    document.getElementById("pin-error").textContent = "";
+    document.getElementById("pin-overlay").style.display = "flex";
+  });
 }
 
 function hidePinModal() {
   document.getElementById("pin-overlay").style.display = "none";
-  pinEntry = "";
-  pinCallback = null;
+  if (pinReject) { pinReject(); pinReject = null; pinResolve = null; }
 }
 
 function pinKey(digit) {
@@ -1512,10 +1510,8 @@ function updatePinDots() {
 
 function checkPin() {
   if (pinEntry === serverPin) {
-    sessionAuthenticated = true;
-    hidePinModal();
-    updateAuthUI();
-    if (pinCallback) { const cb = pinCallback; pinCallback = null; cb(); }
+    document.getElementById("pin-overlay").style.display = "none";
+    if (pinResolve) { const r = pinResolve; pinResolve = null; pinReject = null; r(); }
   } else {
     document.getElementById("pin-error").textContent = "Incorrect PIN. Try again.";
     pinEntry = "";
@@ -1523,8 +1519,6 @@ function checkPin() {
   }
 }
 
-// updateAuthUI is a no-op — tabs are always visible; PIN gates individual actions
-function updateAuthUI() {}
 
 // ═══════════════════════════════════════════════════════
 // SETTINGS TAB
@@ -1663,11 +1657,8 @@ async function savePin() {
 }
 
 async function saveSettingsConfig() {
-  // Require PIN before saving config
-  if (!sessionAuthenticated) {
-    showPinModal(() => saveSettingsConfig());
-    return;
-  }
+  // Always require PIN before saving config
+  try { await requestPin(); } catch { return; }
   syncPlayerInputs();
   const players = CONFIG.participants.filter(p => p.trim().length > 0);
   if (players.length < 2) { showToast("Need at least 2 players", "error"); return; }
@@ -1692,7 +1683,6 @@ async function saveSettingsConfig() {
     value: JSON.stringify({ participants:CONFIG.participants, entryFee:CONFIG.entryFee, payouts:CONFIG.payouts, winnerCount:CONFIG.winnerCount, lossPayout:CONFIG.lossPayout })
   });
   if (ok) {
-    sessionAuthenticated = false; // always require PIN again for next save
     showToast("Config saved! Future matches will use new settings ✅", "success");
     renderAll();
     renderSettings(); // refresh to show updated state
@@ -1705,6 +1695,11 @@ async function saveSettingsConfig() {
 // Initial load from Google Sheets, then auto-refresh every 30 seconds
 fetchFromSheets();
 setInterval(fetchFromSheets, 30000);
+
+// Prevent bottom-of-page rubber band bounce while keeping pull-to-refresh at top
+document.addEventListener("scroll", () => {
+  document.body.style.overscrollBehaviorY = window.scrollY > 5 ? "none" : "auto";
+}, { passive: true });
 </script>
 </body>
 </html>
