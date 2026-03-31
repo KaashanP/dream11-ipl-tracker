@@ -1696,10 +1696,27 @@ async function saveSettingsConfig() {
 fetchFromSheets();
 setInterval(fetchFromSheets, 30000);
 
-// Prevent bottom-of-page rubber band bounce while keeping pull-to-refresh at top
-document.addEventListener("scroll", () => {
-  document.body.style.overscrollBehaviorY = window.scrollY > 5 ? "none" : "auto";
+// Prevent iOS rubber-band overscroll
+let startY = 0;
+document.addEventListener('touchstart', (e) => {
+  startY = e.touches[0].pageY;
 }, { passive: true });
+
+document.addEventListener('touchmove', (e) => {
+  const scrollY = window.scrollY || window.pageYOffset;
+  const currentY = e.touches[0].pageY;
+  const isAtTop = scrollY <= 0;
+  const isAtBottom = (scrollY + window.innerHeight) >= document.documentElement.scrollHeight;
+
+  // Prevent pull-down when at top
+  if (isAtTop && currentY > startY) {
+    e.preventDefault();
+  }
+  // Prevent pull-up when at bottom
+  if (isAtBottom && currentY < startY) {
+    e.preventDefault();
+  }
+}, { passive: false });
 </script>
 </body>
 </html>
