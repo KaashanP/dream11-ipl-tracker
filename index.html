@@ -8,6 +8,8 @@
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  /* Kill rubber-band bounce on BOTH html and body — works Chrome + Safari */
+  html, body { overscroll-behavior-y: none; -webkit-overflow-scrolling: auto; }
   /* Prevent double-tap zoom on all interactive elements */
   button, select, input, a, label { touch-action: manipulation; }
 
@@ -1216,6 +1218,7 @@ function renderMatchDetail() {
 // ═══════════════════════════════════════════════════════
 function renderInput() {
   const sel=document.getElementById("match-select");
+  const prevVal = sel.value; // preserve user's manual selection
   let todayId=null, firstInc=null;
   sel.innerHTML=MATCHES.map(m=>{
     const done=!!appData.results[m.id], today=isToday(m.date);
@@ -1224,7 +1227,14 @@ function renderInput() {
     return `<option value="${m.id}">Match ${m.id}: ${m.teams} (${formatDateFull(m.date)})${done?" ✓":""}${today?" ← TODAY":""}</option>`;
   }).join("");
 
-  sel.value=todayId||firstInc||(MATCHES.length?MATCHES[0].id:null);
+  // If user had a match selected AND it's still incomplete, keep their selection
+  // Otherwise auto-select today's match or first incomplete
+  const prevResult = prevVal ? appData.results[parseInt(prevVal)] : null;
+  if (prevVal && !prevResult) {
+    sel.value = prevVal; // keep user's selection — they haven't submitted yet
+  } else {
+    sel.value=todayId||firstInc||(MATCHES.length?MATCHES[0].id:null);
+  }
   updateTodayCard(); onMatchSelected();
 }
 
