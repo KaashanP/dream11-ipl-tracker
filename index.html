@@ -8,8 +8,24 @@
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  /* Kill rubber-band bounce on BOTH html and body — works Chrome + Safari */
+  html, body { overscroll-behavior-y: none; -webkit-overflow-scrolling: auto; }
   /* Prevent double-tap zoom on all interactive elements */
   button, select, input, a, label { touch-action: manipulation; }
+
+  /* Pull-to-refresh indicator */
+  #ptr-indicator {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    height: 0; overflow: hidden;
+    background: var(--accent-gold); color: #fff;
+    font-size: 13px; font-weight: 600;
+    transition: height 0.15s ease;
+  }
+  #ptr-indicator.visible { height: 44px; }
+  #ptr-indicator.releasing { background: var(--accent-green); }
+  .ptr-spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: ptr-spin 0.7s linear infinite; }
+  @keyframes ptr-spin { to { transform: rotate(360deg); } }
 
   :root {
     --bg-primary: #faf6f1;
@@ -38,9 +54,7 @@
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     background: var(--bg-primary);
     color: var(--text-primary);
-    margin: 0;
-    padding: 0;
-    overscroll-behavior-y: none;
+    min-height: 100vh;
   }
 
   /* ─── HEADER ─── */
@@ -679,6 +693,12 @@
 </head>
 <body>
 
+<!-- Pull-to-refresh indicator -->
+<div id="ptr-indicator">
+  <div class="ptr-spinner"></div>
+  <span id="ptr-label">Pull to refresh</span>
+</div>
+
 <div class="header">
   <div class="header-left">
     <div class="logo">D11</div>
@@ -923,6 +943,7 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwx_a31J6mkbVQ3
 
 let appData = { results: {} };
 let isSyncing = false;
+let configInitialized = false; // server config only applied once on first load
 
 function setLoading(on) {
   const btn = document.getElementById("submit-btn");
@@ -945,8 +966,14 @@ async function fetchFromSheets() {
     const json = await res.json();
     if (json.success) {
       appData = { results: json.results || {} };
-      // Load settings from server
-      if (json.settings) applyServerSettings(json.settings);
+      // Load settings from server — only on first load, not every auto-refresh
+      if (json.settings && !configInitialized) {
+        applyServerSettings(json.settings);
+        configInitialized = true;
+      } else if (json.settings) {
+        // On subsequent refreshes, only update the PIN — never stomp CONFIG
+        if (json.settings.pin) serverPin = String(json.settings.pin);
+      }
       const el = document.getElementById("sync-status");
       if (el) { el.textContent = "✓ Live"; el.style.color = "var(--accent-green)"; }
     } else {
@@ -1685,6 +1712,7 @@ async function saveSettingsConfig() {
     value: JSON.stringify({ participants:CONFIG.participants, entryFee:CONFIG.entryFee, payouts:CONFIG.payouts, winnerCount:CONFIG.winnerCount, lossPayout:CONFIG.lossPayout })
   });
   if (ok) {
+    configInitialized = true; // prevent auto-refresh from overwriting with old server config
     showToast("Config saved! Future matches will use new settings ✅", "success");
     renderAll();
     renderSettings(); // refresh to show updated state
@@ -1698,7 +1726,47 @@ async function saveSettingsConfig() {
 fetchFromSheets();
 setInterval(fetchFromSheets, 30000);
 
-// CSS overscroll-behavior-y: none on body prevents rubber-band
+// ─── Custom pull-to-refresh (replaces native bounce + adds refresh gesture) ───
+(function() {
+  const THRESHOLD = 72;   // px to drag before release triggers refresh
+  const ptr = document.getElementById("ptr-indicator");
+  const ptrLabel = document.getElementById("ptr-label");
+  let startY = 0, currentY = 0, pulling = false, canPull = false;
+
+  document.addEventListener("touchstart", e => {
+    startY = e.touches[0].clientY;
+    canPull = window.scrollY === 0; // only activate when at very top
+    pulling = false;
+  }, { passive: true });
+
+  document.addEventListener("touchmove", e => {
+    if (!canPull) return;
+    currentY = e.touches[0].clientY;
+    const dist = currentY - startY;
+    if (dist <= 0) return;
+    pulling = true;
+    const progress = Math.min(dist, THRESHOLD * 1.5);
+    ptr.style.height = Math.min(progress * 0.5, 44) + "px";
+    ptr.classList.toggle("visible", progress > 20);
+    ptr.classList.toggle("releasing", dist >= THRESHOLD);
+    ptrLabel.textContent = dist >= THRESHOLD ? "Release to refresh" : "Pull to refresh";
+  }, { passive: true });
+
+  document.addEventListener("touchend", () => {
+    if (!pulling) return;
+    const dist = currentY - startY;
+    ptr.style.height = "0";
+    ptr.classList.remove("visible", "releasing");
+    pulling = false;
+    if (dist >= THRESHOLD) {
+      // Brief green flash then reload
+      ptr.style.height = "44px";
+      ptr.classList.add("visible", "releasing");
+      ptrLabel.textContent = "Refreshing…";
+      setTimeout(() => { ptr.style.height = "0"; ptr.classList.remove("visible","releasing"); fetchFromSheets(); }, 500);
+    }
+  }, { passive: true });
+})();
 </script>
 </body>
 </html>
