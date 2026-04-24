@@ -1083,6 +1083,9 @@ function getTiePayout(r, p, payouts, lossPayout) {
   const p1 = payouts[0]||0, p2 = payouts[1]||0, p3 = payouts[2]||0, p4 = payouts[3]||0;
   const TIE1ST = (p1 + p2) / 2;
   const TIE2ND = (p2 + p3) / 2;
+  const TIE3RD = (p3 + p4) / 2;
+  const TIE4TH = (p4 + lossPayout) / 2;
+
   if (r.firstTied) {
     if (r.first === p || r.firstTied === p) return { pay: TIE1ST, pos: "tie1" };
     if (r.third === p) return { pay: p3, pos: "third" };
@@ -1091,6 +1094,15 @@ function getTiePayout(r, p, payouts, lossPayout) {
     if (r.first === p) return { pay: p1, pos: "first" };
     if (r.second === p || r.secondTied === p) return { pay: TIE2ND, pos: "tie2" };
     if (r.fourth === p) return { pay: p4, pos: "fourth" };
+  } else if (r.thirdTied) {
+    if (r.first === p) return { pay: p1, pos: "first" };
+    if (r.second === p) return { pay: p2, pos: "second" };
+    if (r.third === p || r.thirdTied === p) return { pay: TIE3RD, pos: "tie3" };
+  } else if (r.fourthTied) {
+    if (r.first === p) return { pay: p1, pos: "first" };
+    if (r.second === p) return { pay: p2, pos: "second" };
+    if (r.third === p) return { pay: p3, pos: "third" };
+    if (r.fourth === p || r.fourthTied === p) return { pay: TIE4TH, pos: "tie4" };
   } else {
     if (r.first === p) return { pay: p1, pos: "first" };
     if (r.second === p) return { pay: p2, pos: "second" };
@@ -1115,8 +1127,8 @@ function getPlayerStats() {
       const {pay, pos} = getTiePayout(r, p, cfg.payouts, cfg.lossPayout);
       if (pos==="first"||pos==="tie1") s[p].first++;
       else if (pos==="second"||pos==="tie2") s[p].second++;
-      else if (pos==="third") s[p].third++;
-      else if (pos==="fourth") s[p].fourth++;
+      else if (pos==="third"||pos==="tie3") s[p].third++;
+      else if (pos==="fourth"||pos==="tie4") s[p].fourth++;
       s[p].total += pay; s[p].matches++;
       s[p].last5.push(pay); if (s[p].last5.length > 5) s[p].last5.shift();
     });
@@ -1195,12 +1207,13 @@ function renderMatchDetail() {
         const {pay, pos} = getTiePayout(r, p, cfg.payouts, cfg.lossPayout);
         const cls = (pos==="first"||pos==="tie1") ? "md-cell-first"
                   : (pos==="second"||pos==="tie2") ? "md-cell-second"
-                  : pos==="third" ? "md-cell-third"
-                  : pos==="fourth" ? "md-cell-fourth"
+                  : (pos==="third"||pos==="tie3") ? "md-cell-third"
+                  : (pos==="fourth"||pos==="tie4") ? "md-cell-fourth"
                   : "md-cell-loss";
-        const label = (pos==="tie1"||pos==="tie2") ? formatAmount(pay)+"*" : formatAmount(pay);
+        const label = (pos==="tie1"||pos==="tie2"||pos==="tie3"||pos==="tie4") ? formatAmount(pay)+"*" : formatAmount(pay);
         rt[p] = (rt[p]||0) + pay;
-        cells+=`<td class="${cls}" title="${pos==="tie1"?"Tie 1st":pos==="tie2"?"Tie 2nd":""}">${label}</td>`;
+        const title = pos==="tie1"?"Tie 1st":pos==="tie2"?"Tie 2nd":pos==="tie3"?"Tie 3rd":pos==="tie4"?"Tie 4th":"";
+        cells+=`<td class="${cls}" title="${title}">${label}</td>`;
       });
     } else {
       players.forEach(()=>{ cells+=`<td class="md-cell-pending">—</td>`; });
@@ -1252,7 +1265,7 @@ function updateTodayCard() {
   }
 }
 
-// Tie state: "none" | "first" | "second"
+// Tie state: "none" | "first" | "second" | "third" | "fourth"
 let tieState = "none";
 
 function onMatchSelected() {
@@ -1266,7 +1279,8 @@ function onMatchSelected() {
     // Use the config snapshot from this result (not current CONFIG) for correct display
     const cfg = getConfigForResult(r);
     const p1=cfg.payouts[0]||0, p2=cfg.payouts[1]||0, p3=cfg.payouts[2]||0, p4=cfg.payouts[3]||0;
-    const TIE1ST = (p1+p2)/2, TIE2ND = (p2+p3)/2;
+    const lossPayout=cfg.lossPayout;
+    const TIE1ST = (p1+p2)/2, TIE2ND = (p2+p3)/2, TIE3RD = (p3+p4)/2, TIE4TH = (p4+lossPayout)/2;
     let summary = "";
     if (r.firstTied) {
       summary = `<strong style="color:var(--accent-gold)">🤝 Tie 1st:</strong> ${r.first} & ${r.firstTied} (+₹${TIE1ST} each)<br>
@@ -1274,6 +1288,15 @@ function onMatchSelected() {
     } else if (r.secondTied) {
       summary = `<strong style="color:var(--accent-gold)">1st:</strong> ${r.first} (+₹${p1})<br>
         <strong style="color:var(--accent-silver)">🤝 Tie 2nd:</strong> ${r.second} & ${r.secondTied} (+₹${TIE2ND} each)${r.fourth?`<br><strong style="color:var(--accent-blue)">4th:</strong> ${r.fourth} (+₹${p4})`:""}`;
+    } else if (r.thirdTied) {
+      summary = `<strong style="color:var(--accent-gold)">1st:</strong> ${r.first} (+₹${p1})<br>
+        <strong style="color:var(--accent-silver)">2nd:</strong> ${r.second} (+₹${p2})<br>
+        <strong style="color:var(--accent-bronze)">🤝 Tie 3rd:</strong> ${r.third} & ${r.thirdTied} (+₹${TIE3RD} each)`;
+    } else if (r.fourthTied) {
+      summary = `<strong style="color:var(--accent-gold)">1st:</strong> ${r.first} (+₹${p1})<br>
+        <strong style="color:var(--accent-silver)">2nd:</strong> ${r.second} (+₹${p2})<br>
+        <strong style="color:var(--accent-bronze)">3rd:</strong> ${r.third} (+₹${p3})<br>
+        <strong style="color:var(--accent-blue)">🤝 Tie 4th:</strong> ${r.fourth} & ${r.fourthTied} (${formatAmount(TIE4TH)} each)`;
     } else {
       summary = `<strong style="color:var(--accent-gold)">1st:</strong> ${r.first} (+₹${p1})<br>
         <strong style="color:var(--accent-silver)">2nd:</strong> ${r.second} (+₹${p2})<br>
@@ -1293,8 +1316,12 @@ function renderInputForm(mid) {
   const wc = CONFIG.winnerCount || 3;
   const isTie1 = tieState === "first";
   const isTie2 = tieState === "second";
+  const isTie3 = tieState === "third";
+  const isTie4 = tieState === "fourth";
   const TIE1ST = ((payouts[0]||0) + (payouts[1]||0)) / 2;
   const TIE2ND = ((payouts[1]||0) + (payouts[2]||0)) / 2;
+  const TIE3RD = ((payouts[2]||0) + (payouts[3]||0)) / 2;
+  const TIE4TH = ((payouts[3]||0) + CONFIG.lossPayout) / 2;
 
   function opts(placeholder) {
     return `<option value="">${placeholder}</option>${ps.map(p=>`<option value="${p}">${p}</option>`).join("")}`;
@@ -1345,22 +1372,43 @@ function renderInputForm(mid) {
         </div><div class="disabled-reason">Merged into tie</div>
       </div>`
     : `<div class="input-card">
-        <div class="input-card-header"><div class="position-badge pos-3">3</div>
-          <div><div class="input-card-title">3rd Place</div><div class="input-card-prize">Wins +₹${payouts[2]||0}</div></div>
+        <div class="input-card-header">
+          <div class="position-badge pos-3">3</div>
+          <div>
+            <div class="input-card-title">3rd Place</div>
+            <div class="input-card-prize">${isTie3 ? `🤝 Tie — each +₹${TIE3RD}` : `Wins +₹${payouts[2]||0}`}</div>
+          </div>
+          <button class="tie-btn${isTie3?" remove":""}" onclick="toggleTie('third',${mid})">${isTie3?"✕ Remove Tie":"+ Add Tie"}</button>
         </div>
         <select class="player-select" id="sel-third" onchange="validateSelections()">${opts("Select 3rd place...")}</select>
+        ${isTie3 ? `<div class="tie-second-row"><span class="tie-label">🤝 Also 3rd:</span>
+          <select class="player-select" id="sel-third-tied" onchange="validateSelections()" style="flex:1">${opts("Select tied player...")}</select>
+        </div>` : ""}
       </div>`;
 
-  // Card 4 — only shown when winnerCount >= 4
+  // Card 4 — only shown when winnerCount >= 4, disabled when tie for 3rd
   const card4 = wc >= 4
-    ? `<div class="input-card">
-        <div class="input-card-header"><div class="position-badge pos-4">4</div>
-          <div><div class="input-card-title">4th Place</div>
-            <div class="input-card-prize">${(payouts[3]||0) === 0 ? "+₹0" : `+₹${payouts[3]}`}</div>
+    ? (isTie3
+      ? `<div class="input-card disabled-card">
+          <div class="input-card-header"><div class="position-badge pos-4">4</div>
+            <div><div class="input-card-title">4th Place</div><div class="input-card-prize">+₹${payouts[3]||0}</div></div>
+          </div><div class="disabled-reason">Merged into tie</div>
+        </div>`
+      : `<div class="input-card">
+          <div class="input-card-header">
+            <div class="position-badge pos-4">4</div>
+            <div>
+              <div class="input-card-title">4th Place</div>
+              <div class="input-card-prize">${isTie4 ? `🤝 Tie — each ${formatAmount(TIE4TH)}` : ((payouts[3]||0) === 0 ? "+₹0" : `+₹${payouts[3]}`)}</div>
+            </div>
+            <button class="tie-btn${isTie4?" remove":""}" onclick="toggleTie('fourth',${mid})">${isTie4?"✕ Remove Tie":"+ Add Tie"}</button>
           </div>
-        </div>
-        <select class="player-select" id="sel-fourth" onchange="validateSelections()">${opts("Select 4th place...")}</select>
-      </div>` : "";
+          <select class="player-select" id="sel-fourth" onchange="validateSelections()">${opts("Select 4th place...")}</select>
+          ${isTie4 ? `<div class="tie-second-row"><span class="tie-label">🤝 Also 4th:</span>
+            <select class="player-select" id="sel-fourth-tied" onchange="validateSelections()" style="flex:1">${opts("Select tied player...")}</select>
+          </div>` : ""}
+        </div>`)
+    : "";
 
   area.innerHTML = `${card1}${card2}${card3}${card4}
     <div class="validation-error" id="val-error"></div>
@@ -1384,21 +1432,24 @@ function validateSelections() {
 
   const f  = (document.getElementById("sel-first")||{}).value || "";
   const ft = tieState==="first"  ? ((document.getElementById("sel-first-tied")||{}).value||"") : null;
-  const s  = tieState!=="first"  ? ((document.getElementById("sel-second")||{}).value||"") : null;
+  const s  = (tieState!=="first")  ? ((document.getElementById("sel-second")||{}).value||"") : null;
   const st = tieState==="second" ? ((document.getElementById("sel-second-tied")||{}).value||"") : null;
-  const t  = tieState!=="second" ? ((document.getElementById("sel-third")||{}).value||"") : null;
-  const fo = wc >= 4             ? ((document.getElementById("sel-fourth")||{}).value||"") : null;
+  const t  = (tieState!=="second" && tieState!=="first") ? ((document.getElementById("sel-third")||{}).value||"") : null;
+  const tt = tieState==="third" ? ((document.getElementById("sel-third-tied")||{}).value||"") : null;
+  const fo = (wc >= 4 && tieState!=="third") ? ((document.getElementById("sel-fourth")||{}).value||"") : null;
+  const fot = tieState==="fourth" ? ((document.getElementById("sel-fourth-tied")||{}).value||"") : null;
 
-  const active = [f, ft, s, st, t, fo].filter(v => v !== null && v !== "");
+  const active = [f, ft, s, st, t, tt, fo, fot].filter(v => v !== null && v !== "");
   if (new Set(active).size !== active.length) {
     err.textContent = "Each player can only be selected once!"; err.style.display = "block"; btn.disabled = true; return;
   }
 
   const required = [f];
-  if (tieState==="first")  { required.push(ft); required.push(t); }
-  else if (tieState==="second") { required.push(s); required.push(st); }
-  else { required.push(s); required.push(t); }
-  if (wc >= 4) required.push(fo);
+  if (tieState==="first")  { required.push(ft); required.push(t); if (wc >= 4) required.push(fo); }
+  else if (tieState==="second") { required.push(s); required.push(st); if (wc >= 4) required.push(fo); }
+  else if (tieState==="third") { required.push(s); required.push(t); required.push(tt); }
+  else if (tieState==="fourth") { required.push(s); required.push(t); required.push(fo); required.push(fot); }
+  else { required.push(s); required.push(t); if (wc >= 4) required.push(fo); }
 
   err.style.display = "none";
   btn.disabled = required.some(v => !v);
@@ -1443,6 +1494,27 @@ async function submitResult(mid) {
     const ok = await postToSheets(payload); if (!ok) return;
     appData.results[mid] = resultEntry;
     showToast(`Match ${mid} saved! ${f} wins, 🤝 ${s} & ${st} tie for 2nd!`, "success");
+  } else if (tieState === "third") {
+    const s  = (document.getElementById("sel-second")||{}).value || "";
+    const t  = (document.getElementById("sel-third")||{}).value || "";
+    const tt = (document.getElementById("sel-third-tied")||{}).value || "";
+    if (!s || !t || !tt) return;
+    payload.second = s; payload.third = t; payload.thirdTied = tt;
+    resultEntry = {...resultEntry, second:s, third:t, thirdTied:tt };
+    const ok = await postToSheets(payload); if (!ok) return;
+    appData.results[mid] = resultEntry;
+    showToast(`Match ${mid} saved! ${f} wins, ${s} 2nd, 🤝 ${t} & ${tt} tie for 3rd!`, "success");
+  } else if (tieState === "fourth") {
+    const s   = (document.getElementById("sel-second")||{}).value || "";
+    const t   = (document.getElementById("sel-third")||{}).value || "";
+    const fo  = (document.getElementById("sel-fourth")||{}).value || "";
+    const fot = (document.getElementById("sel-fourth-tied")||{}).value || "";
+    if (!s || !t || !fo || !fot) return;
+    payload.second = s; payload.third = t; payload.fourth = fo; payload.fourthTied = fot;
+    resultEntry = {...resultEntry, second:s, third:t, fourth:fo, fourthTied:fot };
+    const ok = await postToSheets(payload); if (!ok) return;
+    appData.results[mid] = resultEntry;
+    showToast(`Match ${mid} saved! 🤝 ${fo} & ${fot} tie for 4th!`, "success");
   } else {
     const s  = (document.getElementById("sel-second")||{}).value || "";
     const t  = (document.getElementById("sel-third")||{}).value || "";
