@@ -1011,6 +1011,7 @@ function applyServerSettings(settings) {
     try {
       const cfg = typeof settings.config === "string" ? JSON.parse(settings.config) : settings.config;
       if (cfg.participants && cfg.participants.length >= 2) CONFIG.participants = cfg.participants;
+      if (Array.isArray(cfg.inactivePlayers)) CONFIG.inactivePlayers = cfg.inactivePlayers;
       if (cfg.entryFee > 0) CONFIG.entryFee = cfg.entryFee;
       if (Array.isArray(cfg.payouts) && cfg.payouts.length >= 1) CONFIG.payouts = cfg.payouts;
       if (cfg.winnerCount >= 1) CONFIG.winnerCount = cfg.winnerCount;
@@ -1837,7 +1838,14 @@ async function saveSettingsConfig() {
   const ok = await postToSheets({
     action: "saveSetting",
     key: "config",
-    value: JSON.stringify({ participants:CONFIG.participants, entryFee:CONFIG.entryFee, payouts:CONFIG.payouts, winnerCount:CONFIG.winnerCount, lossPayout:CONFIG.lossPayout })
+    value: JSON.stringify({
+      participants: CONFIG.participants,
+      inactivePlayers: CONFIG.inactivePlayers,
+      entryFee: CONFIG.entryFee,
+      payouts: CONFIG.payouts,
+      winnerCount: CONFIG.winnerCount,
+      lossPayout: CONFIG.lossPayout
+    })
   });
   if (ok) {
     configInitialized = true; // prevent auto-refresh from overwriting with old server config
