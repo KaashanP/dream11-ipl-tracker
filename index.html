@@ -1509,7 +1509,7 @@ async function submitResult(mid) {
     entryFee: CONFIG.entryFee,
     payouts: [...CONFIG.payouts],
     winnerCount: CONFIG.winnerCount,
-    lossPayout: CONFIG.lossPayout
+    lossPayout: -150  // Hardcoded: losers always pay 150
   };
 
   let payload = { action:"submit", matchId:mid, first:f, configSnapshot };
