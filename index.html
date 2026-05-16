@@ -1769,7 +1769,9 @@ function updateZeroSum() {
 
   const fee = parseFloat(feeEl.value) || 0;
   const wc  = CONFIG.winnerCount || 3;
-  const n   = CONFIG.participants.length;
+  // Exclude inactive players from count
+  const activePlayers = CONFIG.participants.filter(p => !CONFIG.inactivePlayers.includes(p));
+  const n   = activePlayers.length;
   let totalWinNet = 0;
   for (let i = 0; i < wc; i++) {
     totalWinNet += parseFloat((document.getElementById("s-pay-"+i)||{}).value||0);
