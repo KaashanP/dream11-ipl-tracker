@@ -846,11 +846,27 @@ let CONFIG = {
     "Player 5","Player 6","Player 7","Player 8",
     "Player 9","Player 10","Player 11","Player 12","Player 13"
   ],
-  entryFee: 100,
-  payouts: [500, 300, 100, 0],   // 13×100=1300 pool, 4 winners share 900 net
+  inactivePlayers: ["Shehan"],  // Players who left the pool after Game 34
+  entryFee: 150,
+  payouts: [650, 400, 150, 0],   // 12×150=1800 pool, 4 winners share 1200 net
   winnerCount: 4,
-  lossPayout: -100,
+  lossPayout: -150,
   seasonName: "IPL 2026"
+};
+
+// Historical payout corrections for specific match ranges
+// Used to fix payouts that were entered incorrectly
+const PAYOUT_CORRECTIONS = {
+  // Games 35-59: Payouts were entered as 700/450/200/0 but should be 650/400/150/0
+  ranges: [
+    {
+      matchStart: 35,
+      matchEnd: 59,
+      oldPayouts: [700, 450, 200, 0],
+      newPayouts: [650, 400, 150, 0],
+      excludePlayers: ["Shehan"]  // Shehan left, should not receive -150 from match 35 onwards
+    }
+  ]
 };
 
 // Auth & PIN state
@@ -1078,8 +1094,29 @@ function getConfigForResult(r) {
   };
 }
 
+// Apply payout corrections for specific match ranges
+// Returns corrected {payouts, lossPayout} or original if no correction needed
+function applyCorrectedPayout(matchId, playerName, payouts, lossPayout) {
+  for (const correction of PAYOUT_CORRECTIONS.ranges) {
+    if (matchId >= correction.matchStart && matchId <= correction.matchEnd) {
+      // Check if player is excluded from this match range
+      if (correction.excludePlayers.includes(playerName)) {
+        return { payouts, lossPayout: 0 };  // Player doesn't pay entry fee
+      }
+      // Apply corrected payouts for this range
+      return { payouts: correction.newPayouts, lossPayout };
+    }
+  }
+  return { payouts, lossPayout };
+}
+
 // payouts = array e.g. [500, 300, 100] or [800, 600, 250, 0]
-function getTiePayout(r, p, payouts, lossPayout) {
+function getTiePayout(r, p, payouts, lossPayout, matchId) {
+  // Apply payout corrections if needed
+  const corrected = applyCorrectedPayout(matchId || r.matchId, p, payouts, lossPayout);
+  payouts = corrected.payouts;
+  lossPayout = corrected.lossPayout;
+
   const p1 = payouts[0]||0, p2 = payouts[1]||0, p3 = payouts[2]||0, p4 = payouts[3]||0;
   const TIE1ST = (p1 + p2) / 2;
   const TIE2ND = (p2 + p3) / 2;
@@ -1124,7 +1161,7 @@ function getPlayerStats() {
       if (!s[p]) s[p] = {total:0, matches:0, first:0, second:0, third:0, fourth:0, last5:[]};
     });
     cfg.participants.forEach(p => {
-      const {pay, pos} = getTiePayout(r, p, cfg.payouts, cfg.lossPayout);
+      const {pay, pos} = getTiePayout(r, p, cfg.payouts, cfg.lossPayout, m.id);
       if (pos==="first"||pos==="tie1") s[p].first++;
       else if (pos==="second"||pos==="tie2") s[p].second++;
       else if (pos==="third"||pos==="tie3") s[p].third++;
@@ -1164,14 +1201,16 @@ function renderLeaderboard() {
 
   document.getElementById("lb-body").innerHTML=sorted.map((name,i)=>{
     const s=stats[name], pi=CONFIG.participants.indexOf(name);
+    const isInactive = CONFIG.inactivePlayers.includes(name);
     const wr=s.matches?Math.round(((s.first+s.second+s.third)/s.matches)*100):0;
     const l5=s.last5.reduce((a,b)=>a+b,0);
     const l5c=l5>0?"trend-up":l5<0?"trend-down":"trend-flat";
     const l5a=l5>0?"&#9650;":l5<0?"&#9660;":"&#9644;";
     const rc=i<3?[COLORS[0],"#7f8c8d","#b5651d"][i]:"var(--text-muted)";
-    return `<tr>
+    const inactiveBadge = isInactive ? ' <span style="font-size:10px;background:var(--text-muted);color:white;padding:2px 6px;border-radius:4px;font-weight:600">INACTIVE</span>' : '';
+    return `<tr${isInactive?' style="opacity:0.6"':''}>
       <td class="lb-rank" style="color:${rc}">${i+1}</td>
-      <td><div class="lb-name-cell"><div class="lb-avatar" style="background:${getColor(pi)}">${getInitials(name)}</div><span class="lb-name">${name}</span></div></td>
+      <td><div class="lb-name-cell"><div class="lb-avatar" style="background:${getColor(pi)}">${getInitials(name)}</div><span class="lb-name">${name}${inactiveBadge}</span></div></td>
       <td style="text-align:right" class="${amountClass(s.total)}"><strong>${formatAmount(s.total)}</strong></td>
       <td style="text-align:center">${s.matches}</td>
       <td style="text-align:center;color:var(--accent-gold);font-weight:600">${s.first}</td>
@@ -1204,7 +1243,7 @@ function renderMatchDetail() {
           cells += `<td class="md-cell-pending" title="Not in this match">—</td>`;
           return;
         }
-        const {pay, pos} = getTiePayout(r, p, cfg.payouts, cfg.lossPayout);
+        const {pay, pos} = getTiePayout(r, p, cfg.payouts, cfg.lossPayout, m.id);
         const cls = (pos==="first"||pos==="tie1") ? "md-cell-first"
                   : (pos==="second"||pos==="tie2") ? "md-cell-second"
                   : (pos==="third"||pos==="tie3") ? "md-cell-third"
@@ -1311,7 +1350,8 @@ function onMatchSelected() {
 
 function renderInputForm(mid) {
   const area = document.getElementById("input-form-area");
-  const ps = CONFIG.participants;
+  // Filter out inactive players from dropdown
+  const ps = CONFIG.participants.filter(p => !CONFIG.inactivePlayers.includes(p));
   const payouts = CONFIG.payouts;
   const wc = CONFIG.winnerCount || 3;
   const isTie1 = tieState === "first";
@@ -1637,6 +1677,7 @@ function renderSettings() {
   if (!form) return;
 
   const ps  = CONFIG.participants;
+  const activePs = ps.filter(p => !CONFIG.inactivePlayers.includes(p));
   const pay = CONFIG.payouts;
   const wc  = CONFIG.winnerCount || 3;
   const fee = CONFIG.entryFee;
@@ -1644,13 +1685,18 @@ function renderSettings() {
   form.innerHTML = `
     <!-- Players section -->
     <div class="settings-section">
-      <div class="settings-section-title">👥 Players <span style="font-size:11px;color:var(--text-muted);font-weight:500;text-transform:none;letter-spacing:0">(${ps.length} active)</span></div>
+      <div class="settings-section-title">👥 Players <span style="font-size:11px;color:var(--text-muted);font-weight:500;text-transform:none;letter-spacing:0">(${activePs.length} active${CONFIG.inactivePlayers.length > 0 ? `, ${CONFIG.inactivePlayers.length} inactive` : ''})</span></div>
       <div id="players-list">
-        ${ps.map((p, i) => `<div class="player-row">
-          <span class="player-num">${i+1}.</span>
-          <input type="text" id="pname-${i}" value="${p.replace(/"/g,'&quot;')}" placeholder="Player name">
-          <button class="remove-player-btn" onclick="removePlayer(${i})" title="Remove">✕</button>
-        </div>`).join("")}
+        ${ps.map((p, i) => {
+          const isInactive = CONFIG.inactivePlayers.includes(p);
+          return `<div class="player-row"${isInactive ? ' style="opacity:0.5"' : ''}>
+            <span class="player-num">${i+1}.</span>
+            <input type="text" id="pname-${i}" value="${p.replace(/"/g,'&quot;')}" placeholder="Player name"${isInactive ? ' disabled' : ''}>
+            ${isInactive
+              ? '<span style="font-size:10px;background:var(--text-muted);color:white;padding:2px 6px;border-radius:4px;font-weight:600;margin-left:8px">INACTIVE</span>'
+              : `<button class="remove-player-btn" onclick="removePlayer(${i})" title="Remove">✕</button>`}
+          </div>`;
+        }).join("")}
       </div>
       <button class="add-player-btn" onclick="addSettingsPlayer()">+ Add New Player</button>
     </div>
