@@ -1113,7 +1113,7 @@ function applyCorrectedPayout(matchId, playerName, payouts, lossPayout) {
 
 // payouts = array e.g. [500, 300, 100] or [800, 600, 250, 0]
 function getTiePayout(r, p, payouts, lossPayout, matchId) {
-  // Apply payout corrections if needed
+  // Apply payout corrections ONLY for historical matches (35-59)
   const corrected = applyCorrectedPayout(matchId || r.matchId, p, payouts, lossPayout);
   payouts = corrected.payouts;
   lossPayout = corrected.lossPayout;
@@ -1503,13 +1503,19 @@ async function submitResult(mid) {
   try { await requestPin(); } catch { return; }
   const wc = CONFIG.winnerCount || 3;
 
+  // Calculate loss payout based on active players
+  const activePlayers = CONFIG.participants.filter(p => !CONFIG.inactivePlayers.includes(p));
+  const totalWinnings = CONFIG.payouts.reduce((sum, val) => sum + val, 0);
+  const numLosers = activePlayers.length - wc;
+  const lossPayout = numLosers > 0 ? -(totalWinnings / numLosers) : 0;
+
   // Snapshot of current config — locked forever with this result
   const configSnapshot = {
     participants: [...CONFIG.participants],
     entryFee: CONFIG.entryFee,
     payouts: [...CONFIG.payouts],
     winnerCount: CONFIG.winnerCount,
-    lossPayout: -150  // Hardcoded: losers always pay 150
+    lossPayout: lossPayout
   };
 
   let payload = { action:"submit", matchId:mid, first:f, configSnapshot };
