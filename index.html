@@ -1098,13 +1098,14 @@ function getConfigForResult(r) {
 // Apply payout corrections for specific match ranges
 // Returns corrected {payouts, lossPayout} or original if no correction needed
 function applyCorrectedPayout(matchId, playerName, payouts, lossPayout) {
+  // Shehan left after game 34, so he pays ₹0 for all games 35+
+  if (matchId >= 35 && playerName === "Shehan") {
+    return { payouts, lossPayout: 0 };
+  }
+
   for (const correction of PAYOUT_CORRECTIONS.ranges) {
     if (matchId >= correction.matchStart && matchId <= correction.matchEnd) {
-      // Check if player is excluded from this match range
-      if (correction.excludePlayers.includes(playerName)) {
-        return { payouts, lossPayout: 0 };  // Player doesn't pay entry fee
-      }
-      // Apply corrected payouts for this range
+      // Apply corrected payouts for this range (only for games 35-59)
       return { payouts: correction.newPayouts, lossPayout };
     }
   }
